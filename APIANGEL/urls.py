@@ -23,4 +23,4 @@ urlpatterns = [
     path('mapa/', views.tu_vista, name='vista_mapa'),
 ]
 
-urlpatterns += staticfiles_urlpatterns()
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
