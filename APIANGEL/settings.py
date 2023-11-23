@@ -79,11 +79,11 @@ WSGI_APPLICATION = 'APIANGEL.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'HOST': 'localhost',
+        'HOST': 'dpg-clfqsdug1b2c73a3hshg-a',
         'PORT': 5432,
-        'NAME': 'NSOS_mexico',
-        'USER': 'postgres',
-        'PASSWORD': '12345',
+        'NAME': 'nsosbd',
+        'USER': 'nsosbd_user',
+        'PASSWORD': 'WVO5wM6oxnDiNyLY9CdRjTTOvrrCz4bl',
     }
 }
 
