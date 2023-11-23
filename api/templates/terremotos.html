@@ -1,0 +1,33 @@
+{% load static %}
+<!-- terremotos.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Terremotos en México</title>
+</head>
+<body>
+
+<!-- terremotos.html -->
+<!-- terremotos.html -->
+<h1>Últimos Terremotos</h1>
+
+<ul>
+    {% if terremotos %}
+        {% for terremoto in terremotos %}
+            <li>
+                <strong>Magnitud:</strong> {{ terremoto.properties.mag }}<br>
+                <strong>Ubicación:</strong> {{ terremoto.properties.place }}<br>
+                <strong>Fecha y Hora:</strong> {{ terremoto.properties.time | date:"D d M Y H:i:s" }}<br>
+                <strong>Detalles:</strong> <a href="{{ terremoto.properties.url }}" target="_blank">Enlace</a><br>
+            </li>
+        {% endfor %}
+    {% else %}
+        <li>{{ mensaje_error }}</li>
+    {% endif %}
+</ul>
+
+
+
+
+</body>
+</html>
