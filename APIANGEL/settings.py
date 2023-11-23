@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 import environ
+import dj_database_url
 
 
 env = environ.Env()
@@ -76,17 +77,22 @@ WSGI_APPLICATION = 'APIANGEL.wsgi.application'
 #     }
 # }
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'HOST': 'dpg-clfqsdug1b2c73a3hshg-a',
-        'PORT': 5432,
-        'NAME': 'nsosbd',
-        'USER': 'nsosbd_user',
-        'PASSWORD': 'WVO5wM6oxnDiNyLY9CdRjTTOvrrCz4bl',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'HOST': 'postgres://nsosbd_user:WVO5wM6oxnDiNyLY9CdRjTTOvrrCz4bl@dpg-clfqsdug1b2c73a3hshg-a/nsosbd',
+#         'PORT': 5432,
+#         'NAME': 'nsosbd',
+#         'USER': 'nsosbd_user',
+#         'PASSWORD': 'WVO5wM6oxnDiNyLY9CdRjTTOvrrCz4bl',
+#     }
+# }
 
+DATABASES = {
+    'default': dj_database_url.parse(os.environ.get("DATABASE_URL"))
+
+    
+}
 
 
 
