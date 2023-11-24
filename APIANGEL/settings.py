@@ -128,14 +128,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 
 STATIC_URL = '/static/'
-
-# Production settings
-if not DEBUG:
-    # Servir archivos estáticos desde el servidor web en lugar de Django
-    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-else:
-    # Desarrollo: servir archivos estáticos con Django
-    STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'APIANGEL/api/static')
+]
+STATIC_ROOT = os.path.join(BASE_DIR, 'static_root')
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
