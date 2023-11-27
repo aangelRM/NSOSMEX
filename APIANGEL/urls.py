@@ -4,7 +4,7 @@ from django.contrib import admin
 from django.urls import path, include
 from api.views import *
 from api import views
-from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+
 
 urlpatterns = [
     path('', Login.as_view(), name='login'),
@@ -23,4 +23,3 @@ urlpatterns = [
     path('mapa/', views.tu_vista, name='vista_mapa'),
 ]
 
-urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

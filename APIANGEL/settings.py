@@ -9,8 +9,6 @@ environ.Env.read_env()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend',)
-
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 DEBUG = 'RENDER' not in os.environ
@@ -48,7 +46,7 @@ ROOT_URLCONF = 'APIANGEL.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -129,7 +127,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
     # Turn on WhiteNoise storage backend that takes care of compressing static files
     # and creating unique names for each version so they can safely be cached forever.
