@@ -1,4 +1,10 @@
 from django.shortcuts import render, redirect
+from django.template.loader import render_to_string
+from django.core.mail import EmailMessage
+from smtplib import SMTPException
+from django.shortcuts import render
+from .forms import *
+from .models import *
 from django.views import View
 from django.views.generic import View
 from django.conf import settings
@@ -8,13 +14,9 @@ from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate
 from django.db import IntegrityError
 from django.core.mail import send_mail
-from django.template.loader import render_to_string
 from django.http import HttpResponse , HttpRequest
-from .forms import UsuarioForm
-from .models import *
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import check_password
-from smtplib import SMTPException
 
 ""
 # apis
@@ -58,7 +60,6 @@ def vista_terremotos(request):
         return render(request, 'terremotos.html', {'terremotos': terremotos})
     else:
         return render(request, 'terremotos.html', {'terremotos': []})  # Maneja el caso de error
-
 
 
 
@@ -147,21 +148,32 @@ class FormularioUsuarioView(HttpRequest):
                 # Obtener los datos del formulario
                 correo = form.cleaned_data['correoUsuario']
                 password = form.cleaned_data['contraUsuario']
+                
+                # Verifica que 'nombreUsuario' esté presente en cleaned_data antes de acceder
+                nombre_usuario = form.cleaned_data.get('nombreUsuario', '')
 
                 # Crear un usuario con la contraseña cifrada
-                user = Usuario(correoUsuario=correo)
+                user = Usuario(correoUsuario=correo, nombreUsuario=nombre_usuario)
                 user.set_password(password)
                 user.save()
+                
+                
 
                 # Crear el mensaje del correo electrónico
                 subject = 'Bienvenida'
-                from_email = 'angel585244102@gmail.com'  # Reemplaza con tu dirección de correo
+                from_email = 'angel585244102@gmail.com'
                 recipient_list = [correo]
-                message = render_to_string('correo.html', {'user': user})
+
+                # Renderizar la plantilla como una cadena HTML
+                html_message = render_to_string('correo.html', {'user': user})
+
+                # Crear un mensaje de correo electrónico
+                email = EmailMessage(subject, html_message, from_email, recipient_list)
+                email.content_subtype = 'html'  # Indicar que el contenido es HTML
 
                 # Enviar el correo electrónico
                 try:
-                    send_mail(subject, message, from_email, recipient_list)
+                    email.send()
                 except SMTPException:
                     print('Error al enviar el correo electrónico')
 
@@ -171,7 +183,6 @@ class FormularioUsuarioView(HttpRequest):
         return render(request, "pages/examples/register.html", {"form": UsuarioForm(), "error_message": "Error en el formulario"})
 
             
-        
         
         
 class Main(APIView):
@@ -203,3 +214,39 @@ class Widgets(APIView):
     def get(self, request):
         return render(request, self.template_name)
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+#-------------------------------------------------------------------------------------------------------------#
+#-------------------------------------------------------------------------------------------------------------#
+#-------------------------------------------------------------------------------------------------------------#
+#-------------------------------------------------------------------------------------------------------------#
+#-------------------------------------------------------------------------------------------------------------#
+#-------------------------------------------------------------------------------------------------------------#
+
+
+def eliminar_todos_los_usuarios(request):
+    # Obtén la QuerySet de todos los usuarios y elimínalos
+    Usuario.objects.all().delete()
+
+    # Redirige a la página deseada después de la eliminación
+    return redirect('main')
+
+
+
+def ver_todos_los_registros(request):
+    # Obtén la QuerySet de todos los registros
+    registros = Usuario.objects.all()
+
+    # Pasa la QuerySet a la plantilla para mostrar los registros
+    return render(request, 'mapa.html', {'registros': registros})

@@ -161,10 +161,18 @@ function initMap() {
         );
     }
 }
+
 </script>
 <script async defer
    src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&libraries=places&callback=initMap">
 </script>
 {% endblock %}
+
+
+<h1>Lista de Registros</h1>
+
+{% for registro in registros %}
+    <p>ID: {{ registro.idUsuario }}, Nombre: {{ registro.nombreUsuario }}, Correo: {{ registro.correoUsuario }}</p>
+{% endfor %}
 </body>
 </html>

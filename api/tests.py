@@ -32,7 +32,7 @@ class ModelTests(TestCase):
     def test_crear_instancia_avisos_recomendaciones(self):
         # Crea una instancia del modelo AvisosRecomendaciones y realiza pruebas
         avisos_recomendaciones = AvisosRecomendaciones(opcion_avisos="Opción 6")
-        self.assertEqual(avisos_recomendaciones.opcion_avisos, "Opción 6")
+        self.assertEqual(avisos_recomendaciones.opcion_avisos, "6776667")
 
     def test_crear_instancia_mapa_interactivo(self):
         # Crea una instancia del modelo MapaInteractivo y realiza pruebas

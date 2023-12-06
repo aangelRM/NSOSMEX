@@ -1,9 +1,50 @@
-{% block content %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenido a Nuestra Plataforma</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+        }
+        p {
+            color: #555;
+            margin-bottom: 20px;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>¡Hola, {{ user.nombreUsuario }}!</h1>
+        <p>Te damos la bienvenida a nuestra plataforma. tu contraseña es {{ user.contraUsuario }}</p>
 
-¡Hola, {{ user.correoUsuario }}!
-
-Te damos la bienvenida a nuestra plataforma.
-
-Tu contraseña es: {{ user.contraUsuario }}
-
-{% endblock %}
+        <!-- Botón con enlace -->
+        <a href="https://ns-n4m0.onrender.com" class="button">Ir a la Página</a>
+    </div>
+</body>
+</html>

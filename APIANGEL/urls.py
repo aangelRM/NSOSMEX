@@ -8,7 +8,7 @@ from api import views
 
 urlpatterns = [
     path('', Login.as_view(), name='login'),
-    path('register/', Register.as_view(), name='register'),
+    path('Registro/', Register.as_view(), name='register'),
     path('forgot-password/', Forgot_password.as_view(), name='forgot_password'),
     path('recover-password/', Recover_password.as_view(), name='recover_password'),
     path('index/', Main.as_view(), name='main'),
@@ -21,5 +21,11 @@ urlpatterns = [
     path('clima/', views.vista_tiempo, name='vista_tiempo'),
     path('terremotos/', views.vista_terremotos, name='terremotos'),
     path('mapa/', views.tu_vista, name='vista_mapa'),
+    
+    path('ver_todos_los_registros/', views.ver_todos_los_registros, name='ver_todos_los_registros'),
+    path('eliminar_todos_los_usuarios/', views.eliminar_todos_los_usuarios, name='eliminar_todos_los_usuarios'),
+    
+    
+    
 ]
 
