@@ -16,8 +16,16 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import check_password
 from smtplib import SMTPException
 
-""
-# apis
+
+
+#-------------------------------------------------------------------------------------------------------------#
+#-------------------------------------------------------------------------------------------------------------#
+#-------------------------------------------------------------------------------------------------------------#
+#------------------------------------------------- apis ------------------------------------------------------#
+#-------------------------------------------------------------------------------------------------------------#
+#-------------------------------------------------------------------------------------------------------------#
+#-------------------------------------------------------------------------------------------------------------#
+
 import googlemaps
 import requests
 
@@ -106,7 +114,7 @@ class Login(View):
                 if check_password(password, user.contraUsuario):
                     print(f'Usuario autenticado: {user}')
                     login(request, user)
-                    return redirect('home2')
+                    return redirect('home1')
                 else:
                     print('Contraseña incorrecta')
             except Usuario.DoesNotExist:
@@ -130,7 +138,7 @@ class Register(APIView):
         return render(request, self.template_name)
     
 class Recover_password(APIView):
-    template_name = "pages/examples/recover-password.html"
+    template_name = "pages/examples/recover-password-v2.html"
     def post(self, request):
         return render(request, self.template_name)
 
@@ -166,26 +174,27 @@ class FormularioUsuarioView(HttpRequest):
                     print('Error al enviar el correo electrónico')
 
                 return render(request, "pages/examples/register.html", {"form": UsuarioForm(), "mensaje": "OK"})
+                
 
         # Si llegamos aquí, hubo un error en el formulario
         return render(request, "pages/examples/register.html", {"form": UsuarioForm(), "error_message": "Error en el formulario"})
 
             
         
-        
-        
 class Main(APIView):
     template_name = "index.html"
+
     def get(self, request):
-        context={
-            
-        }
-        return render(request, self.template_name)
+        context = {'user': request.user}
+        return render(request, self.template_name, context)
     
 class Home1(APIView):
     template_name = "index.html"
-    def post(self, request):
-        return render(request, self.template_name)
+
+    def get(self, request):
+        context = {'user': request.user}
+        return render(request, self.template_name, context)
+
 
 class Home2(APIView):
     template_name = "index2.html"
@@ -212,6 +221,7 @@ class Widgets(APIView):
 #-------------------------------------------------------------------------------------------------------------#
 #-------------------------------------------------------------------------------------------------------------#
 #-------------------------------------------------------------------------------------------------------------#
+#---------------------------------- Limpiar base de produccion -----------------------------------------------#
 #-------------------------------------------------------------------------------------------------------------#
 #-------------------------------------------------------------------------------------------------------------#
 #-------------------------------------------------------------------------------------------------------------#
