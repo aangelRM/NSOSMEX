@@ -1,10 +1,4 @@
 from django.shortcuts import render, redirect
-from django.template.loader import render_to_string
-from django.core.mail import EmailMessage
-from smtplib import SMTPException
-from django.shortcuts import render
-from .forms import *
-from .models import *
 from django.views import View
 from django.views.generic import View
 from django.conf import settings
@@ -14,9 +8,13 @@ from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate
 from django.db import IntegrityError
 from django.core.mail import send_mail
+from django.template.loader import render_to_string
 from django.http import HttpResponse , HttpRequest
+from .forms import UsuarioForm
+from .models import *
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import check_password
+from smtplib import SMTPException
 
 ""
 # apis
@@ -60,6 +58,7 @@ def vista_terremotos(request):
         return render(request, 'pages/template_apis/terremotos.html', {'terremotos': terremotos})
     else:
         return render(request, 'pages/template_apis/terremotos.html', {'terremotos': []})  # Maneja el caso de error
+
 
 
 
@@ -131,7 +130,7 @@ class Register(APIView):
         return render(request, self.template_name)
     
 class Recover_password(APIView):
-    template_name = "pages/examples/recover-password-v2.html"
+    template_name = "pages/examples/recover-password.html"
     def post(self, request):
         return render(request, self.template_name)
 
@@ -148,32 +147,21 @@ class FormularioUsuarioView(HttpRequest):
                 # Obtener los datos del formulario
                 correo = form.cleaned_data['correoUsuario']
                 password = form.cleaned_data['contraUsuario']
-                
-                # Verifica que 'nombreUsuario' esté presente en cleaned_data antes de acceder
-                nombre_usuario = form.cleaned_data.get('nombreUsuario', '')
 
                 # Crear un usuario con la contraseña cifrada
-                user = Usuario(correoUsuario=correo, nombreUsuario=nombre_usuario)
+                user = Usuario(correoUsuario=correo)
                 user.set_password(password)
                 user.save()
-                
-                
 
                 # Crear el mensaje del correo electrónico
                 subject = 'Bienvenida'
-                from_email = 'angel585244102@gmail.com'
+                from_email = 'angel585244102@gmail.com'  # Reemplaza con tu dirección de correo
                 recipient_list = [correo]
-
-                # Renderizar la plantilla como una cadena HTML
-                html_message = render_to_string('correo.html', {'user': user})
-
-                # Crear un mensaje de correo electrónico
-                email = EmailMessage(subject, html_message, from_email, recipient_list)
-                email.content_subtype = 'html'  # Indicar que el contenido es HTML
+                message = render_to_string('correo.html', {'user': user})
 
                 # Enviar el correo electrónico
                 try:
-                    email.send()
+                    send_mail(subject, message, from_email, recipient_list)
                 except SMTPException:
                     print('Error al enviar el correo electrónico')
 
@@ -183,6 +171,7 @@ class FormularioUsuarioView(HttpRequest):
         return render(request, "pages/examples/register.html", {"form": UsuarioForm(), "error_message": "Error en el formulario"})
 
             
+        
         
         
 class Main(APIView):
@@ -213,13 +202,6 @@ class Widgets(APIView):
     template_name = "pages/widgets.html"
     def get(self, request):
         return render(request, self.template_name)
-
-
-
-
-
-
-
 
 
 

@@ -4,15 +4,13 @@ from .models import *
 
 from django import forms
 from .models import Usuario
-from django.contrib.auth.forms import ReadOnlyPasswordHashField
 
 class UsuarioForm(forms.ModelForm):
     class Meta:
         model = Usuario
-        fields = ['nombreUsuario','correoUsuario', 'contraUsuario']  # Solo estos campos
+        fields = ['correoUsuario', 'contraUsuario']  # Solo estos campos
 
         labels = {
-            'nombreUsuario' : 'Nombre de usuario',
             'correoUsuario': 'Correo Electrónico',
             'contraUsuario': 'Contraseña',
         }
