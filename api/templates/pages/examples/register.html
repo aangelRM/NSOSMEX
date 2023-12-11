@@ -45,14 +45,13 @@
       {% if form.erros %}
       <p class="login-box-msg">No se inserto</p>
       {% endif %}
-      form 
       <form action="{% url "guardarUsuario" %}" method="post">
         {% csrf_token %}
         {% if mensaje %}
         <p class="login-box-msg">Registro exitoso</p>
         {% endif %}
         <div class="input-group mb-3">
-          <input type="text" class="form-control" placeholder="Full name" name="nombreUsuario">
+          <input type="text" class="form-control" placeholder="Nombre Completo" name="nombreUsuario">
           <div class="input-group-append">
             <div class="input-group-text">
               <span class="fas fa-user"></span>
@@ -60,7 +59,7 @@
           </div>
         </div>
         <div class="input-group mb-3">
-          <input type="email" class="form-control" placeholder="Email" name="correoUsuario">
+          <input type="email" class="form-control" placeholder="Correo" name="correoUsuario">
           <div class="input-group-append">
             <div class="input-group-text">
               <span class="fas fa-envelope"></span>
@@ -68,7 +67,7 @@
           </div>
         </div>
         <div class="input-group mb-3">
-          <input type="password" class="form-control" placeholder="Password" name="contraUsuario" id="id_contraUsuario">
+          <input type="password" class="form-control" placeholder="Contraseña" name="contraUsuario" id="id_contraUsuario">
           <div class="input-group-append">
             <div class="input-group-text">
               <span class="fas fa-lock"></span>
@@ -76,7 +75,7 @@
           </div>
         </div>
         <div class="input-group mb-3">
-          <input type="password" class="form-control" placeholder="Retype password" id="id_confirmar_contraUsuario">
+          <input type="password" class="form-control" placeholder="Repetir contraseña" id="id_confirmar_contraUsuario">
           <div class="input-group-append">
             <div class="input-group-text">
               <span class="fas fa-lock"></span>
@@ -88,31 +87,31 @@
             <div class="icheck-primary">
               <input type="checkbox" id="agreeTerms" name="terms" value="agree">
               <label for="agreeTerms">
-               I agree to the <a href="#">terms</a>
+                Acepto los <a href="#"> términos</a>
               </label>
             </div>
           </div>
           <!-- /.col -->
           <div class="col-4">
-            <button type="submit" class="btn btn-primary btn-block">Register</button>
+            <button type="submit" class="btn btn-primary btn-block">Registar</button>
           </div>
           <!-- /.col -->
         </div>
       </form>
 
       <div class="social-auth-links text-center">
-        <p>- OR -</p>
+        <p>- O -</p>
         <a href="#" class="btn btn-block btn-primary">
           <i class="fab fa-facebook mr-2"></i>
-          Sign up using Facebook
+          Entrar usando Google
         </a>
         <a href="#" class="btn btn-block btn-danger">
           <i class="fab fa-google-plus mr-2"></i>
-          Sign up using Google+
+          Entrar usando Google
         </a>
       </div>
 
-      <a href="{% url "login" %}" class="text-center">I already have a membership</a>
+      <a href="{% url "login" %}" class="text-center">Ya tengo una cuenta</a>
     </div>
     <!-- /.form-box -->
   </div><!-- /.card -->

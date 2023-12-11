@@ -9,7 +9,7 @@ from api import views
 urlpatterns = [
     path('', Login.as_view(), name='login'),
     path('Registro/', Register.as_view(), name='register'),
-    path('forgot-password/', Forgot_password.as_view(), name='forgot_password'),
+    path('Recuperacion_contraseña/', Forgot_password.as_view(), name='forgot_password'),
     path('recover-password/', Recover_password.as_view(), name='recover_password'),
     path('index/', Main.as_view(), name='main'),
     path('index/', Home1.as_view(), name='home1'),

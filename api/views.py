@@ -25,10 +25,10 @@ import requests
 
 def tu_vista(request):
     api_key = settings.GOOGLE_MAPS_API_KEY
-    return render(request, 'mapa.html', {'api_key': api_key})
+    return render(request, 'pages/template_apis/mapa.html', {'api_key': api_key})
 
 def vista_tiempo(request):
-    return render(request, 'clima.html')
+    return render(request, 'pages/template_apis/clima.html')
 
 # En views.py
 def obtener_terremotos_mexico():
@@ -57,9 +57,9 @@ def vista_terremotos(request):
     terremotos = obtener_terremotos_mexico()
 
     if terremotos is not None:
-        return render(request, 'terremotos.html', {'terremotos': terremotos})
+        return render(request, 'pages/template_apis/terremotos.html', {'terremotos': terremotos})
     else:
-        return render(request, 'terremotos.html', {'terremotos': []})  # Maneja el caso de error
+        return render(request, 'pages/template_apis/terremotos.html', {'terremotos': []})  # Maneja el caso de error
 
 
 
@@ -131,7 +131,7 @@ class Register(APIView):
         return render(request, self.template_name)
     
 class Recover_password(APIView):
-    template_name = "pages/examples/recover-password.html"
+    template_name = "pages/examples/recover-password-v2.html"
     def post(self, request):
         return render(request, self.template_name)
 
