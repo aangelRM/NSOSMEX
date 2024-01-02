@@ -1,23 +1,145 @@
 {% load static %}
-<!-- mapa.html -->
+
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mapa de Google</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mapa de Google</title>
     <!-- Incluye la API de Google Maps con tu clave -->
     <script src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&libraries=places" async defer></script>
     <style>
         /* Ajusta el tamaño del mapa según sea necesario */
         #map {
-            height: 400px;
-            width: 100%;
+            height:400px;
+            width: 1300px;
         }
     </style>
+  {% include "pages/includes/headindexs.html" %}
 </head>
-<body>
-<!-- En mapa.html -->
+<body class="hold-transition sidebar-mini layout-fixed">
+<div class="wrapper">
+  {% include "pages/includes/preloader.html" %}
+
+  <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+  {% include "pages/includes/navbar.html" %}
+  {% include "pages/includes/messages_menu.html" %}
+  {% include "pages/includes/notifications_dropdown_menu.html" %}
+  <!-- /.navbar -->
+
+
+
+  <!-- Main Sidebar Container -->
+  <aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <!-- Brand Logo -->
+    <a class="brand-link">
+      <img src="{% static "img/backgrounds/dist/img/AdminLTELogo.png" %}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+      <span class="brand-text font-weight-light">NSOSMEX</span>
+    </a>
+    <!-- Sidebar -->
+
+    {% include "pages/includes/slidebar.html" %}
+
+
+<!-- SidebarSearch Form -->
+{% include "pages/includes/search.html" %}
+
+      <!-- Sidebar Menu -->
+      {% include "pages/includes/slidebar_menu.html" %}
+
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">Apis</h1>
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Apis</li>
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <!-- Small boxes (Stat box) -->
+        <div class="row">
+          <div class="col-lg-3 col-6">
+            {% comment %}
+            <!-- small box -->
+            <div class="small-box bg-info">
+               <div class="inner">
+                <h3>150</h3>
+
+                <p>New Orders</p>
+              <div class="icon">
+                <i class="ion ion-bag"></i>
+              </div>
+              <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+              
+
+          <!-- ./col -->
+          
+          <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-success">
+              <div class="inner">
+                <h3>53<sup style="font-size: 20px">%</sup></h3>
+
+                <p>Bounce Rate</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-stats-bars"></i>
+              </div>
+              <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+          
+          <!-- ./col -->
+          <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-warning">
+              <div class="inner">
+                <h3>44</h3>
+
+                <p>User Registrations</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-person-add"></i>
+              </div>
+              <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+          </div> 
+          <!-- ./col -->
+          <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-danger">
+              <div class="inner">
+                <h3>65</h3>
+
+                <p>Unique Visitors</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-pie-graph"></i>
+              </div>
+              <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+          {% endcomment %}
+          <!-- ./col -->
+        <!-- En mapa.html -->
 
 
 {% block content %}
@@ -41,6 +163,8 @@ function initMap() {
 
     // Creación del mapa
     var map = new google.maps.Map(document.getElementById('map'), mapOptions);
+    var trafficLayer = new google.maps.TrafficLayer();
+    trafficLayer.setMap(map);
 
     // Manejo de errores al cargar la API de Google Maps
     google.maps.event.addListenerOnce(map, 'tilesloaded', function() {
@@ -174,5 +298,60 @@ function initMap() {
 {% for registro in registros %}
     <p>ID: {{ registro.idUsuario }}, Nombre: {{ registro.nombreUsuario }}, Correo: {{ registro.correoUsuario }}</p>
 {% endfor %}
+
+
+<div class="MultitypeMap_realApiContainer__3TBkW "><ymaps is="ymaps" style="width: 100%; height: 100%; margin: 0px; padding: 0px; display: block;"><div class="sc-c7f0cb71-0 sc-f4e3c96a-1 gEgiVW coTFgW sc-4dece732-1 dPnqEj"><p class="sc-11207c1a-0 dwGWE">Add location to Favorites</p><div class="sc-f141535-0 exmykA"><input class="sc-f141535-2 crLfCw" placeholder="Location name" aria-label="Location name" font-size="var(--size-m)"></div><div class="sc-c7f0cb71-0 pnUai"><button disabled="" type="button" class="sc-4026a333-0 bMFVSD">Save</button><button type="button" class="sc-4026a333-0 iiLNdE">Cancel</button></div></div><ymaps class="ymaps3x0--map-container"><ymaps class="ymaps3x0--map" style="width: 670px; height: 384px; touch-action: none;"><ymaps class="ymaps3x0--main-engine-container"><canvas width="1005" height="576" style="width: 100%; height: 100%;"></canvas></ymaps><ymaps class="ymaps3x0--top-engine-container"><ymaps><ymaps class="ymaps3x0--layer ymaps3x0--graphics-layer" style="perspective: 716.554px; opacity: 1; display: none;"><svg xlink="http://www.w3.org/1999/xlink"><g></g></svg></ymaps><ymaps class="ymaps3x0--layer ymaps3x0--marker-layer" style="opacity: 1; transform-origin: 335px 192px;"><ymaps class="ymaps3x0--marker" style="transform: translate(331.667px, 214.667px); z-index: 0;"><ymaps><div draggable="true" class="sc-74d98863-0 cBNWIp"></div></ymaps></ymaps><ymaps class="ymaps3x0--marker" style="transform: translate(331.667px, 214.667px); z-index: 0;"><ymaps><div class="sc-4dece732-0 cHcnAV"><button font-weight="400" font-size="var(--size-s)" type="button" class="sc-4026a333-0 ggeVrr">Add location</button></div></ymaps></ymaps></ymaps></ymaps></ymaps></ymaps><ymaps class="ymaps3x0--controls ymaps3x0--controls_center ymaps3x0--controls_right ymaps3x0--controls_vertical"><ymaps class="ymaps3x0--control sc-f75b32e8-0 sc-a47c876b-0 eroCHu"><button class="sc-71cbfa9f-0 dBJjED"><div class="sc-c7f0cb71-0 gDHVJI"><svg width="18" height="18" fill="none" xmlns="http://www.w3.org/2000/svg" role="presentation" preserveAspectRatio="xMidYMid meet" viewBox="0 0 18 18"><circle cx="9" cy="9" r="4" stroke="currentColor" stroke-width="2"></circle><path d="M9 2V5" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path><path d="M5 9H2" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path><path d="M13 9H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path><path d="M9 13V16" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path><circle cx="9" cy="9" r="1" fill="currentColor"></circle></svg></div></button></ymaps><ymaps class="ymaps3x0--control sc-f75b32e8-0 sc-b4ded5ac-0 eroCHu"><button class="sc-71cbfa9f-0 dBJjED" data-zoom-diff="1"><svg width="18" height="18" fill="none" xmlns="http://www.w3.org/2000/svg" role="presentation" preserveAspectRatio="xMidYMid meet" viewBox="0 0 18 18"><path d="M3 9L15 9" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path><path d="M9 15L9 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg></button><button class="sc-71cbfa9f-0 dBJjED" data-zoom-diff="-1"><svg width="18" height="18" fill="none" xmlns="http://www.w3.org/2000/svg" role="presentation" preserveAspectRatio="xMidYMid meet" viewBox="0 0 18 18"><path d="M3 9L15 9" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg></button></ymaps></ymaps><ymaps class="ymaps3x0--controls ymaps3x0--controls_top ymaps3x0--controls_left ymaps3x0--controls_vertical"><ymaps class="ymaps3x0--control sc-f75b32e8-0 eroCHu mapLayerSelect"><div class="rmsc sc-741ab6a9-0 dXUntO sc-91e71c86-0 eDhEJb"><div tabindex="0" class="dropdown-container" aria-labelledby=":r4:" aria-readonly="true" aria-expanded="false"><div class="dropdown-heading"><div class="dropdown-heading-value"><span>Precipitation</span></div><div class="sc-c7f0cb71-0 dWeCla sc-5f58aa6f-1 cauwDN"><svg width="6" height="10" class="sc-fcc6d0ad-0 bWaQIE sc-fcc6d0ad-1 LhrFt sc-5f58aa6f-0 jdFhpE" fill="none" xmlns="http://www.w3.org/2000/svg" role="presentation" preserveAspectRatio="xMidYMid meet" viewBox="0 0 6 10"><path d="M1.53.227a.75.75 0 1 0-1.06 1.06L1.53.228ZM.47 8.712a.75.75 0 0 0 1.06 1.061L.47 8.713Zm0-7.424 3.747 3.747 1.061-1.06L1.53.227.47 1.287Zm3.747 3.677L.47 8.712l1.06 1.061 3.748-3.748-1.06-1.06Zm0 .07a.05.05 0 0 1 0-.07l1.061 1.06a1.45 1.45 0 0 0 0-2.05l-1.06 1.06Z" fill="currentColor"></path></svg></div></div></div></div><div class="sc-91e71c86-1 xPiZP"><svg width="18" height="18" class="sc-fcc6d0ad-0 bWaQIE" fill="none" xmlns="http://www.w3.org/2000/svg" role="presentation" preserveAspectRatio="xMidYMid meet" viewBox="0 0 18 18"><path d="M2.79252 8.25745C2.50265 7.84954 2.43734 7.37179 2.43636 7.18032C2.43639 7.17935 2.43643 7.17804 2.43649 7.1764C2.43675 7.16854 2.43742 7.15321 2.43901 7.13151C2.44221 7.08783 2.44901 7.02006 2.46328 6.93656C2.49244 6.76586 2.5493 6.55006 2.65511 6.34362C2.7591 6.14073 2.90356 5.95924 3.10802 5.82626C3.30844 5.69592 3.61325 5.58148 4.0909 5.58148H4.9648L4.88803 4.7138C4.88802 4.71354 4.88799 4.71324 4.88797 4.71289L4.88681 4.69397C4.88577 4.67472 4.88441 4.64272 4.8838 4.59981C4.88257 4.51367 4.88442 4.38551 4.89763 4.2298C4.92442 3.91379 4.99592 3.50908 5.16517 3.11666C5.3322 2.72942 5.58788 2.36765 5.983 2.09903C6.37561 1.83211 6.96297 1.61818 7.86038 1.61818C9.17935 1.61818 9.93074 2.15651 10.3666 2.66182C10.5928 2.92407 10.7417 3.18782 10.8331 3.38454C10.8784 3.48219 10.9086 3.56102 10.9263 3.61162C10.9352 3.63684 10.9408 3.65479 10.9437 3.66426L10.9457 3.67073L11.1363 4.38914L11.8691 4.24589L11.8692 4.24586L11.8693 4.24585L11.8694 4.24582L11.87 4.24572L11.8704 4.24563L11.8739 4.245L11.9015 4.24021C11.9278 4.23582 11.9693 4.22928 12.0238 4.22195C12.1332 4.20723 12.293 4.18955 12.4861 4.17925C12.8781 4.15835 13.3779 4.16964 13.8605 4.28113C14.3439 4.39282 14.7582 4.59255 15.0496 4.90848C15.3277 5.20988 15.5636 5.69192 15.5636 6.51542C15.5636 7.25771 15.3538 7.71813 15.0857 8.02509C14.8057 8.34587 14.3979 8.57163 13.8918 8.72034C13.0207 8.97627 12.07 8.95584 11.3956 8.94134C11.2563 8.93835 11.1288 8.93561 11.0162 8.93561C10.4393 8.93561 8.83223 8.95637 7.37786 8.97697C6.64883 8.9873 5.95547 8.99762 5.44439 9.00537L4.83274 9.01472L4.66375 9.01735L4.61948 9.01804L4.61086 9.01817C3.54288 9.01668 3.04921 8.61866 2.79252 8.25745Z" stroke="currentColor" stroke-width="1.6"></path><path d="M6.54544 11.4546L1.63635 16.3637" stroke="currentColor" stroke-width="1.6" stroke-miterlimit="10"></path><path d="M13.9091 11.4546L9 16.3637" stroke="currentColor" stroke-width="1.6" stroke-miterlimit="10"></path><path d="M9.30446 12.2727L6.54547 14.9238" stroke="currentColor" stroke-width="1.6" stroke-miterlimit="10"></path></svg></div></ymaps></ymaps></ymaps></ymaps></div>
+
+  <!-- /.content-wrapper -->
+  <footer class="main-footer">
+    <strong>Copyright &copy; 2014-2021 <a href="https://adminlte.io">AdminLTE.io</a>.</strong>
+    All rights reserved.
+    <div class="float-right d-none d-sm-inline-block">
+      <b>Version</b> 3.2.0
+    </div>
+  </footer>
+
+  <!-- Control Sidebar -->
+  <aside class="control-sidebar control-sidebar-dark">
+    <!-- Control sidebar content goes here -->
+  </aside>
+  <!-- /.control-sidebar -->
+</div>
+<!-- ./wrapper -->
+
+<!-- jQuery -->
+<script src="{% static "js/plugins/jquery/jquery.min.js" %}"></script>
+<!-- jQuery UI 1.11.4 -->
+<script src="{% static "js/plugins/jquery-ui/jquery-ui.min.js" %}"></script>
+<!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+<script>
+  $.widget.bridge('uibutton', $.ui.button)
+</script>
+<!-- Bootstrap 4 -->
+<script src="{% static "js/plugins/bootstrap/js/bootstrap.bundle.min.js" %}"></script>
+<!-- ChartJS -->
+<script src="{% static "js/plugins/chart.js/Chart.min.js" %}"></script>
+<!-- Sparkline -->
+<script src="{% static "js/plugins/sparklines/sparkline.js" %}"></script>
+<!-- JQVMap -->
+<script src="{% static "js/plugins/jqvmap/jquery.vmap.min.js" %}"></script>
+<script src="{% static "js/plugins/jqvmap/maps/jquery.vmap.usa.js" %}"></script>
+<!-- jQuery Knob Chart -->
+<script src="{% static "js/plugins/jquery-knob/jquery.knob.min.js" %}"></script>
+<!-- daterangepicker -->
+<script src="{% static "js/plugins/moment/moment.min.js" %}"></script>
+<script src="{% static "js/plugins/daterangepicker/daterangepicker.js" %}"></script>
+<!-- Tempusdominus Bootstrap 4 -->
+<script src="{% static "js/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js" %}"></script>
+<!-- Summernote -->
+<script src="{% static "js/plugins/summernote/summernote-bs4.min.js" %}"></script>
+<!-- overlayScrollbars -->
+<script src="{% static "js/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js" %}"></script>
+<!-- AdminLTE App -->
+<script src="{% static "js/dist/js/adminlte.js" %}"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="{% static "js/dist/js/demo.js" %}"></script>
+<!-- AdminLTE dashboard demo (This is only for demo purposes) -->
+<script src="{% static "js/dist/js/pages/dashboard.js" %}"></script>
 </body>
 </html>

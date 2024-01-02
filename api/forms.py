@@ -8,9 +8,10 @@ from .models import Usuario
 class UsuarioForm(forms.ModelForm):
     class Meta:
         model = Usuario
-        fields = ['correoUsuario', 'contraUsuario']  # Solo estos campos
+        fields = ['nombreUsuario','correoUsuario', 'contraUsuario']  # Solo estos campos
 
         labels = {
+            'nombreUsuario': 'Nombre de usuario',
             'correoUsuario': 'Correo Electrónico',
             'contraUsuario': 'Contraseña',
         }

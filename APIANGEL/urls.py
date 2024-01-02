@@ -22,8 +22,10 @@ urlpatterns = [
     path('mapa/', views.tu_vista, name='vista_mapa'),
 
 
-    # path('ver_todos_los_registros/', views.ver_todos_los_registros, name='ver_todos_los_registros'),
-    # path('eliminar_todos_los_usuarios/', views.eliminar_todos_los_usuarios, name='eliminar_todos_los_usuarios'),
+
+
+    path('ver_todos_los_registros/', views.ver_todos_los_registros, name='ver_todos_los_registros'),
+    path('eliminar_todos_los_usuarios/', views.eliminar_todos_los_usuarios, name='eliminar_todos_los_usuarios'),
     
     
     

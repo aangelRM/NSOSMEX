@@ -142,8 +142,7 @@ class Recover_password(APIView):
     def post(self, request):
         return render(request, self.template_name)
 
-class FormularioUsuarioView(HttpRequest):
-
+class FormularioUsuarioView(View):
     def index(request):
         Usuario = UsuarioForm()
         return render(request, 'pages/examples/register.html', {"form": Usuario})
@@ -153,32 +152,34 @@ class FormularioUsuarioView(HttpRequest):
             form = UsuarioForm(request.POST)
             if form.is_valid():
                 # Obtener los datos del formulario
+                nombre_usuario = form.cleaned_data.get('nombreUsuario', '')
                 correo = form.cleaned_data['correoUsuario']
                 password = form.cleaned_data['contraUsuario']
 
                 # Crear un usuario con la contraseña cifrada
-                user = Usuario(correoUsuario=correo)
+                user = Usuario(correoUsuario=correo, nombreUsuario=nombre_usuario)
                 user.set_password(password)
                 user.save()
 
                 # Crear el mensaje del correo electrónico
                 subject = 'Bienvenida'
-                from_email = 'angel585244102@gmail.com'  # Reemplaza con tu dirección de correo
+                from_email = 'angel585244102@gmail.com'
                 recipient_list = [correo]
-                message = render_to_string('correo.html', {'user': user})
+
+                # Renderizar la plantilla como una cadena HTML
+                html_message = render_to_string('correo.html', {'user': user, 'nombre_usuario': nombre_usuario})
+
 
                 # Enviar el correo electrónico
                 try:
-                    send_mail(subject, message, from_email, recipient_list)
+                    send_mail(subject, '', from_email, recipient_list, html_message=html_message)
                 except SMTPException:
                     print('Error al enviar el correo electrónico')
 
                 return render(request, "pages/examples/register.html", {"form": UsuarioForm(), "mensaje": "OK"})
-                
 
         # Si llegamos aquí, hubo un error en el formulario
         return render(request, "pages/examples/register.html", {"form": UsuarioForm(), "error_message": "Error en el formulario"})
-
             
         
 class Main(APIView):
@@ -186,7 +187,9 @@ class Main(APIView):
 
     def get(self, request):
         context = {'user': request.user}
+        print(request.user)  # Agrega esta línea para imprimir información de usuario en la consola
         return render(request, self.template_name, context)
+
     
 class Home1(APIView):
     template_name = "index.html"
