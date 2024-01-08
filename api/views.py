@@ -15,7 +15,11 @@ from .models import *
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import check_password
 from smtplib import SMTPException
+from django.utils.crypto import get_random_string
+from django.contrib import messages
 
+import random
+from django.contrib.auth.hashers import make_password
 
 
 #-------------------------------------------------------------------------------------------------------------#
@@ -70,10 +74,13 @@ def vista_terremotos(request):
 
 
 
-
-
-
-
+#-------------------------------------------------------------------------------------------------------------#
+#-------------------------------------------------------------------------------------------------------------#
+#-------------------------------------------------------------------------------------------------------------#
+#------------------------------------------------- login -----------------------------------------------------#
+#-------------------------------------------------------------------------------------------------------------#
+#-------------------------------------------------------------------------------------------------------------#
+#-------------------------------------------------------------------------------------------------------------#
 
 
 class Login(View):
@@ -114,7 +121,7 @@ class Login(View):
                 if check_password(password, user.contraUsuario):
                     print(f'Usuario autenticado: {user}')
                     login(request, user)
-                    return redirect('home1')
+                    return redirect('home2')
                 else:
                     print('Contraseña incorrecta')
             except Usuario.DoesNotExist:
@@ -124,22 +131,126 @@ class Login(View):
 
         return render(request, self.template_name, {'form': form})
 
-
+#-------------------------------------------------------------------------------------------------------------#
+#-------------------------------------------------------------------------------------------------------------#
+#-------------------------------------------------------------------------------------------------------------#
+#---------------------------------------- Recuperar contraseña -----------------------------------------------#
+#-------------------------------------------------------------------------------------------------------------#
+#-------------------------------------------------------------------------------------------------------------#
+#-------------------------------------------------------------------------------------------------------------#
 
     
-class Forgot_password(APIView):
-    template_name = "pages/examples/forgot-password.html"
+
+
+
+
+class Forgot_password(View):
+    template_name = "pages/examples/forgot-password-v2.html"
+
     def get(self, request):
-        return render(request, self.template_name)
+        form = UsuarioForm()
+        return render(request, self.template_name, {"form": form})
+
+    def post(self, request):
+        form = UsuarioForm(request.POST)
+
+        if form.is_valid():
+            # Obtener los datos del formulario
+            correo = form.cleaned_data['correoUsuario']
+
+            # Verificar si el correo existe en la base de datos
+            if Usuario.objects.filter(correoUsuario=correo).exists():
+                # Redirigir a la página de recuperación de contraseña
+                return redirect('recover_password', correo=correo)
+            else:
+                # Mostrar un mensaje si el correo no está registrado
+                error_message = "No hay ningún correo registrado con esa dirección."
+                return render(request, self.template_name, {"form": UsuarioForm(), "error_message": error_message})
+
+        # Si el formulario no es válido, vuelve a mostrar la página de recuperación
+        return render(request, self.template_name, {"form": form})
+
+
+
+
+
+
+
+
+
+class Recover_password(View):
+    template_name = "pages/examples/recover-password-v2.html"
+
+    def get(self, request, correo):
+        return render(request, self.template_name, {'correo': correo})
+
+    def post(self, request, correo):
+        # Obtener el correo directamente de los datos POST
+        correo = request.POST.get('correoUsuario')
+
+        codigo_ingresado = request.POST.get('codigo')
+        nueva_contrasena = request.POST.get('nueva_contrasena')
+
+        try:
+            usuario = Usuario.objects.get(correoUsuario=correo, codigo_recuperacion=codigo_ingresado)
+        except Usuario.DoesNotExist:
+            messages.error(request, 'El código ingresado no es válido. Intenta de nuevo.')
+            return render(request, self.template_name, {'correo': correo})
+
+        # Si el código es válido, actualiza la contraseña y limpia el código
+        usuario.contraUsuario = nueva_contrasena
+        usuario.codigo_recuperacion = None  # Limpia el código de recuperación
+        usuario.save()
+
+        messages.success(request, 'Contraseña cambiada exitosamente. Ahora puedes iniciar sesión con tu nueva contraseña.')
+
+        return redirect('login')  # O redirige a donde desees después del cambio de contraseña
+
+
+       
+
+
+class IngresarCodigo(View):
+    template_name = "pages/examples/ingresar-codigo.html"
+
+    def get(self, request, correo):
+        return render(request, self.template_name, {'correo': correo})
+
+    def post(self, request, correo):
+        codigo = request.POST.get('codigo')
+        nueva_contrasena = request.POST.get('nueva_contrasena')
+
+        try:
+            usuario = Usuario.objects.get(correoUsuario=correo, codigo_recuperacion=codigo)
+            
+            # Validar el código (puedes agregar más lógica según tus necesidades)
+
+            # Actualizar la contraseña
+            usuario.contraUsuario = make_password(nueva_contrasena)
+            usuario.codigo_recuperacion = None  # Limpiar el código de recuperación
+            usuario.save()
+
+            messages.success(request, 'Contraseña actualizada correctamente. Puedes iniciar sesión con la nueva contraseña.')
+            return redirect('login')  # Puedes redirigir a donde desees después de la actualización
+
+        except Usuario.DoesNotExist:
+            messages.error(request, 'Código de recuperación no válido. Intenta de nuevo o solicita un nuevo código.')
+            return redirect('ingresar_codigo', correo=correo)
+
+
+
+#-------------------------------------------------------------------------------------------------------------#
+#-------------------------------------------------------------------------------------------------------------#
+#-------------------------------------------------------------------------------------------------------------#
+#--------------------------------------------- Registro ------------------------------------------------------#
+#-------------------------------------------------------------------------------------------------------------#
+#-------------------------------------------------------------------------------------------------------------#
+#-------------------------------------------------------------------------------------------------------------#
+
     
 class Register(APIView):
     template_name = "pages/examples/register.html"
     def get(self, request):
-        return render(request, self.template_name)
-    
-class Recover_password(APIView):
-    template_name = "pages/examples/recover-password-v2.html"
-    def post(self, request):
         return render(request, self.template_name)
 
 class FormularioUsuarioView(View):
@@ -185,7 +296,17 @@ class FormularioUsuarioView(View):
         # Si llegamos aquí, hubo un error en el formulario
         return render(request, "pages/examples/register.html", {"form": UsuarioForm(), "error_message": "Error en el formulario"})
             
-        
+
+
+#-------------------------------------------------------------------------------------------------------------#
+#-------------------------------------------------------------------------------------------------------------#
+#-------------------------------------------------------------------------------------------------------------#
+#---------------------------------------------- Otras vistas -------------------------------------------------#
+#-------------------------------------------------------------------------------------------------------------#
+#-------------------------------------------------------------------------------------------------------------#
+#-------------------------------------------------------------------------------------------------------------#
+
+
 class Main(APIView):
     template_name = "index.html"
 

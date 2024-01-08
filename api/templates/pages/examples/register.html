@@ -55,12 +55,10 @@
       {% if error_message %}
           <p class="text-danger">{{ error_message }}</p>
         {% endif %}
-        
+
       <form action="{% url "guardarUsuario" %}" method="post" onsubmit="return validarContrasena()">
         {% csrf_token %}
-        {% if mensaje %}
-        <p class="login-box-msg">Registro exitoso</p>
-        {% endif %}
+        
         <div class="input-group mb-3">
           <input type="text" class="form-control" placeholder="Nombre Completo" name="nombreUsuario">
           <div class="input-group-append">

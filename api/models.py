@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.hashers import make_password, check_password
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.utils.crypto import get_random_string
 
 # Tabla "conoce_servicios_emergencia"
 class ConoceServiciosEmergencia(models.Model):
@@ -79,8 +81,6 @@ class Formulario(models.Model):
 
     def __str__(self):
         return f"Encuesta de servicios de emergencia: {self.pk}"
-
-
 
 
 class Usuario(models.Model):
