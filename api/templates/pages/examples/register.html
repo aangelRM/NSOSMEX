@@ -51,6 +51,11 @@
       {% if form.erros %}
       <p class="login-box-msg">No se inserto</p>
       {% endif %}
+
+      {% if error_message %}
+          <p class="text-danger">{{ error_message }}</p>
+        {% endif %}
+        
       <form action="{% url "guardarUsuario" %}" method="post" onsubmit="return validarContrasena()">
         {% csrf_token %}
         {% if mensaje %}

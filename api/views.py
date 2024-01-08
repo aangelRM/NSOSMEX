@@ -155,6 +155,9 @@ class FormularioUsuarioView(View):
                 nombre_usuario = form.cleaned_data.get('nombreUsuario', '')
                 correo = form.cleaned_data['correoUsuario']
                 password = form.cleaned_data['contraUsuario']
+                
+                if Usuario.objects.filter(correoUsuario=correo).exists():
+                    return render(request, "pages/examples/register.html", {"form": UsuarioForm(), "error_message": "El correo ya está registrado"})
 
                 # Crear un usuario con la contraseña cifrada
                 user = Usuario(correoUsuario=correo, nombreUsuario=nombre_usuario)
@@ -162,7 +165,7 @@ class FormularioUsuarioView(View):
                 user.save()
                 
                 login(request, user)
-                
+
                 # Crear el mensaje del correo electrónico
                 subject = 'Bienvenida'
                 from_email = 'angel585244102@gmail.com'
