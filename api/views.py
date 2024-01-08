@@ -160,7 +160,9 @@ class FormularioUsuarioView(View):
                 user = Usuario(correoUsuario=correo, nombreUsuario=nombre_usuario)
                 user.set_password(password)
                 user.save()
-
+                
+                login(request, user)
+                
                 # Crear el mensaje del correo electrónico
                 subject = 'Bienvenida'
                 from_email = 'angel585244102@gmail.com'
@@ -175,9 +177,8 @@ class FormularioUsuarioView(View):
                     send_mail(subject, '', from_email, recipient_list, html_message=html_message)
                 except SMTPException:
                     print('Error al enviar el correo electrónico')
-
-                return render(request, "pages/examples/register.html", {"form": UsuarioForm(), "mensaje": "OK"})
-
+                
+                return redirect('login')
         # Si llegamos aquí, hubo un error en el formulario
         return render(request, "pages/examples/register.html", {"form": UsuarioForm(), "error_message": "Error en el formulario"})
             

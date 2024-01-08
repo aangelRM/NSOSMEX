@@ -15,6 +15,12 @@
   <!-- Theme style -->
   <link rel="stylesheet" href="{% static "css/dist/css/adminlte.min.css" %}">
 
+  <style>
+    /* Estilo para centrar el botón */
+    .center-button {
+      text-align: center;
+    }
+  </style>
 
   <script>
     function validarContrasena() {
@@ -45,7 +51,7 @@
       {% if form.erros %}
       <p class="login-box-msg">No se inserto</p>
       {% endif %}
-      <form action="{% url "guardarUsuario" %}" method="post">
+      <form action="{% url "guardarUsuario" %}" method="post" onsubmit="return validarContrasena()">
         {% csrf_token %}
         {% if mensaje %}
         <p class="login-box-msg">Registro exitoso</p>
@@ -82,17 +88,9 @@
             </div>
           </div>
         </div>
-        <div class="row">
-          <div class="col-8">
-            <div class="icheck-primary">
-              <input type="checkbox" id="agreeTerms" name="terms" value="agree">
-              <label for="agreeTerms">
-                Acepto los <a href="#"> términos</a>
-              </label>
-            </div>
-          </div>
+        
           <!-- /.col -->
-          <div class="col-4">
+          <div class="center-button">
             <button type="submit" class="btn btn-primary btn-block">Registar</button>
           </div>
           <!-- /.col -->
@@ -125,7 +123,25 @@
 <!-- AdminLTE App -->
 <script src="../../dist/js/adminlte.min.js"></script>
 
+<script>
+  function validarContrasena() {
+      var contrasena = document.getElementById('id_contraUsuario').value.trim();
+      var confirmarContrasena = document.getElementById('id_confirmar_contraUsuario').value.trim();
 
+      if (contrasena !== confirmarContrasena) {
+          alert('Las contraseñas no coinciden.');
+          document.getElementById('id_contraUsuario').classList.add('is-invalid');
+          document.getElementById('id_confirmar_contraUsuario').classList.add('is-invalid');
+          return false;
+      } else {
+          // Si las contraseñas coinciden, remueve la clase is-invalid
+          document.getElementById('id_contraUsuario').classList.remove('is-invalid');
+          document.getElementById('id_confirmar_contraUsuario').classList.remove('is-invalid');
+      }
+
+      return true;
+  }
+</script>
 
 
 </body>
