@@ -84,7 +84,7 @@ def vista_terremotos(request):
 
 
 class Login(View):
-    template_name = "login.html"
+    template_name = "pages/registration/login.html"
 
     def get(self, request):
         form = UsuarioForm()
@@ -145,7 +145,7 @@ class Login(View):
 
 
 class Forgot_password(View):
-    template_name = "pages/examples/forgot-password-v2.html"
+    template_name = "pages/registration/forgot-password-v2.html"
 
     def get(self, request):
         form = UsuarioForm()
@@ -179,7 +179,7 @@ class Forgot_password(View):
 
 
 class Recover_password(View):
-    template_name = "pages/examples/recover-password-v2.html"
+    template_name = "pages/registration/recover-password-v2.html"
 
     def get(self, request, correo):
         return render(request, self.template_name, {'correo': correo})
@@ -249,14 +249,14 @@ class IngresarCodigo(View):
 
     
 class Register(APIView):
-    template_name = "pages/examples/register.html"
+    template_name = "pages/registration/register.html"
     def get(self, request):
         return render(request, self.template_name)
 
 class FormularioUsuarioView(View):
     def index(request):
         Usuario = UsuarioForm()
-        return render(request, 'pages/examples/register.html', {"form": Usuario})
+        return render(request, 'pages/registration/register.html', {"form": Usuario})
 
     def procesar_formulario(request):
         if request.method == 'POST':
@@ -268,7 +268,7 @@ class FormularioUsuarioView(View):
                 password = form.cleaned_data['contraUsuario']
                 
                 if Usuario.objects.filter(correoUsuario=correo).exists():
-                    return render(request, "pages/examples/register.html", {"form": UsuarioForm(), "error_message": "El correo ya está registrado"})
+                    return render(request, "pages/registration/register.html", {"form": UsuarioForm(), "error_message": "El correo ya está registrado"})
 
                 # Crear un usuario con la contraseña cifrada
                 user = Usuario(correoUsuario=correo, nombreUsuario=nombre_usuario)
@@ -283,7 +283,7 @@ class FormularioUsuarioView(View):
                 recipient_list = [correo]
 
                 # Renderizar la plantilla como una cadena HTML
-                html_message = render_to_string('correo.html', {'user': user, 'nombre_usuario': nombre_usuario})
+                html_message = render_to_string('pages/registration/correo.html', {'user': user, 'nombre_usuario': nombre_usuario})
 
 
                 # Enviar el correo electrónico
@@ -294,7 +294,7 @@ class FormularioUsuarioView(View):
                 
                 return redirect('login')
         # Si llegamos aquí, hubo un error en el formulario
-        return render(request, "pages/examples/register.html", {"form": UsuarioForm(), "error_message": "Error en el formulario"})
+        return render(request, "pages/registration/register.html", {"form": UsuarioForm(), "error_message": "Error en el formulario"})
             
 
 
@@ -360,7 +360,7 @@ def eliminar_todos_los_usuarios(request):
     Usuario.objects.all().delete()
 
     # Redirige a la página deseada después de la eliminación
-    return redirect('main')
+    return redirect('login')
 
 
 
