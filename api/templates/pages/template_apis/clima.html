@@ -1,19 +1,351 @@
 {% load static %}
-<!-- clima.html -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tu Página con Meteomatics</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NSOSMEX | Clima</title>
+  {% include "pages/includes/headindexs.html" %}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-wvkIjr5q2n5qQG4Dx5Zl4n6HcGGpyW3t0+jiK7eDYj3o3evSOaEYb/kRfnzjD1wI7uF0nJkhjicDDDePMlnGWg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <style>
+    /* Agrega esto al área de estilos de tu archivo CSS */
+    .ventana-emergente {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .contenido {
+        background-color: #fefefe;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        animation: fadeIn 0.3s ease-in-out forwards; /* Agrega animación de entrada */
+    }
+
+    .cerrar {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .cerrar:hover,
+    .cerrar:focus {
+        color: black;
+    }
+
+    .codigo {
+        color: red;
+        font-weight: bold;
+    }
+
+    /* Agrega animación de salida */
+    .ventana-emergente.fade-out .contenido {
+        animation: fadeOut 0.3s ease-in-out forwards;
+    }
+
+    .ventana-emergente.fade-out {
+        animation: fadeOutBackground 0.3s ease-in-out forwards;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    @keyframes fadeOut {
+        from {
+            opacity: 1;
+        }
+        to {
+            opacity: 0;
+        }
+    }
+
+    @keyframes fadeOutBackground {
+        from {
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        to {
+            background-color: rgba(0, 0, 0, 0);
+        }
+    }
+</style>
+
+
 </head>
-<body>
+<body class="hold-transition sidebar-mini layout-fixed">
+<div class="wrapper">
+  {% include "pages/includes/preloader.html" %}
 
-    <!-- Otro contenido de tu página aquí -->
+  {% include "pages/includes/navbar.html" %}
 
-    <iframe src="https://api.meteomatics.com/2023-11-15T10:05:00.000-06:00/t_15m:C/20.2858667,-100.613091_18.3669429,-98.5968666:0.1,0.1/html_map?model=mix" width="800" height="700" frameborder="0" allowfullscreen></iframe>
+  <!-- /.navbar -->
+</ul>
+</nav>
 
-    <!-- Otro contenido de tu página aquí -->
-    <iframe src="https://api.meteomatics.com/2023-11-15T10:05:00.000-06:00--2023-11-20T10:05:00.000-06:00:PT5M/t_15m:C/19.4839446,-99.6899716/html?model=mix" width="800" height="600" frameborder="0" allowfullscreen></iframe>
+
+  <!-- Main Sidebar Container -->
+  <aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <!-- Brand Logo -->
+    <a class="brand-link">
+      <img src="{% static "img/backgrounds/dist/img/AdminLTELogo.png" %}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+      <span class="brand-text font-weight-light">NSOSMEX</span>
+    </a>
+    <!-- Sidebar -->
+    <div class="sidebar">
+    <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+      <div class="image">
+        <img src="{% static "img/backgrounds/dist/img/user2-160x160.jpg" %}" class="img-circle elevation-2" alt="User Image">
+      </div>
+      <div class="info">
+        {% if user.is_authenticated %}
+          <a href="#" onclick="mostrarVentanaEliminar()" class="d-block">{{ user.nombreUsuario }}</a>
+        {% else %}
+          <!-- Puedes mostrar algo diferente si el usuario no está autenticado -->
+          <a href="#" class="d-block" onclick="mostrarVentanaEliminar()">Usuario no autenticado</a>
+          <!-- Agrega esto donde quieras que aparezca el enlace para eliminar la cuenta -->
+          {% endif %}
+       
+
+<!-- Agrega esta ventana emergente oculta -->
+<div id="ventanaEliminar" class="ventana-emergente">
+  <div class="contenido">
+      <span class="cerrar" onclick="cerrarVentanaEliminar()">&times;</span>
+      <p>¿Seguro que quieres eliminar la cuenta?</p>
+      <p>Ingresa lo siguiente: <span class="codigo">eliminar cuenta <span id="codigoAleatorio"></span></span></p>
+      <input type="text" class="form-control mb-2" id="contrasenaEliminar" placeholder="Ingresa la contraseña" onclick="limpiarCampo()">
+      <button id="botonEliminar" class="btn btn-danger mr-2" onclick="eliminarCuenta()">Eliminar</button>
+      <button class="btn btn-secondary" onclick="cerrarVentanaEliminar()">Cancelar</button>
+  </div>
+</div>
+
+   
+      </div>
+    </div>
+
+
+<!-- SidebarSearch Form -->
+{% include "pages/includes/search.html" %}
+
+      <!-- Sidebar Menu -->
+      {% include "pages/includes/slidebar_menu.html" %}
+
+
+
+  
+
+  
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0">Clima</h1>
+                </div><!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a>Clima</a></li>
+                        <li class="breadcrumb-item active">Aplicaciones</li>
+                    </ol>
+                </div><!-- /.col -->
+            </div><!-- /.row -->
+        </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <section class="col-lg-7 connectedSortable">
+                    <!-- Últimos Terremotos -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-cloud mr-1"></i>
+                                Clima actual
+                            </h3>
+                            
+                        </div>
+                        <div class="card-body">
+                            <div style="position: relative; overflow: hidden; width: 100%; padding-top: 75%;">
+                                <iframe src="https://api.meteomatics.com/2024-01-19T06:00:00.000-06:00/t_2m:C/19.5927572,-99.3649242_19.0487187,-98.9403028:0.1,0.1/html_map?model=mix" 
+                                        width="100%" 
+                                        height="100%" 
+                                        style="position: absolute; top: 0; left: 0; border: 0;"
+                                        allowfullscreen>
+                                </iframe>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Gráfico de Dona -->
+                <section class="col-lg-5 connectedSortable">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-sun mr-1"></i>
+                                Pronóstico del tiempo
+                            </h3>
+                            
+                        </div>
+                        <div class="card-body">
+                            <!-- Contenedor del gráfico -->
+                            <div style="position: relative; overflow: hidden; width: 100%; padding-top: 75%;">
+                                <iframe src="https://api.meteomatics.com/2024-01-15T05:55:00.000-06:00--2024-01-31T05:55:00.000-06:00:PT5M/t_2m:C/19.4326296,-99.1331785/html?model=mix" 
+                                        width="100%" 
+                                        height="100%" 
+                                        style="position: absolute; top: 0; left: 0; border: 0;"
+                                        allowfullscreen>
+                                </iframe>
+                        </div>
+                    </div>
+
+
+                </section>
+            </div>
+        </div>
+    </section>
+</div>
+
+
+  <!-- /.content-wrapper -->
+  <footer class="main-footer">
+   
+   
+    <div class="float-right d-none d-sm-inline-block">
+ 
+    </div>
+  </footer>
+
+  <!-- Control Sidebar -->
+  <aside class="control-sidebar control-sidebar-dark">
+    <!-- Control sidebar content goes here -->
+  </aside>
+  <!-- /.control-sidebar -->
+</div>
+<!-- ./wrapper -->
+
+<!-- jQuery -->
+<script src="{% static "js/plugins/jquery/jquery.min.js" %}"></script>
+<!-- jQuery UI 1.11.4 -->
+<script src="{% static "js/plugins/jquery-ui/jquery-ui.min.js" %}"></script>
+<!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+<script>
+  $.widget.bridge('uibutton', $.ui.button)
+</script>
+<!-- Bootstrap 4 -->
+<script src="{% static "js/plugins/bootstrap/js/bootstrap.bundle.min.js" %}"></script>
+<!-- ChartJS -->
+<script src="{% static "js/plugins/chart.js/Chart.min.js" %}"></script>
+<!-- Sparkline -->
+<script src="{% static "js/plugins/sparklines/sparkline.js" %}"></script>
+<!-- JQVMap -->
+<script src="{% static "js/plugins/jqvmap/jquery.vmap.min.js" %}"></script>
+<script src="{% static "js/plugins/jqvmap/maps/jquery.vmap.usa.js" %}"></script>
+<!-- jQuery Knob Chart -->
+<script src="{% static "js/plugins/jquery-knob/jquery.knob.min.js" %}"></script>
+<!-- daterangepicker -->
+<script src="{% static "js/plugins/moment/moment.min.js" %}"></script>
+<script src="{% static "js/plugins/daterangepicker/daterangepicker.js" %}"></script>
+<!-- Tempusdominus Bootstrap 4 -->
+<script src="{% static "js/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js" %}"></script>
+<!-- Summernote -->
+<script src="{% static "js/plugins/summernote/summernote-bs4.min.js" %}"></script>
+<!-- overlayScrollbars -->
+<script src="{% static "js/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js" %}"></script>
+<!-- FullCalendar CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css">
+<!-- FullCalendar JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
+<!-- FullCalendar Localization (Spanish) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/locale/es.js"></script>
+<!-- AdminLTE App -->
+<script src="{% static "js/dist/js/adminlte.js" %}"></script>
+<!-- AdminLTE for demo purposes -->
+<!-- AdminLTE dashboard demo (This is only for demo purposes) -->
+<script src="{% static "js/dist/js/pages/dashboard.js" %}"></script>
+<!-- Incluir Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+
+<script>
+  function mostrarVentanaEliminar() {
+      // Limpia el contenido del campo de texto
+      limpiarCampo();
+
+      // Genera y muestra el código aleatorio
+      var codigoAleatorio = generarCodigoAleatorio();
+      document.getElementById('codigoAleatorio').textContent = codigoAleatorio;
+      document.getElementById('ventanaEliminar').style.display = 'block';
+  }
+
+  function cerrarVentanaEliminar() {
+      // Oculta la ventana emergente
+      document.getElementById('ventanaEliminar').style.display = 'none';
+  }
+
+  function limpiarCampo() {
+      // Limpia el contenido del campo de texto
+      document.getElementById('contrasenaEliminar').value = '';
+  }
+
+  function generarCodigoAleatorio() {
+      // Genera y retorna un número aleatorio de 6 dígitos
+      return Math.floor(100000 + Math.random() * 900000);
+  }
+
+  function eliminarCuenta() {
+      // Obtiene la contraseña ingresada por el usuario
+      var contrasena = document.getElementById('contrasenaEliminar').value;
+
+      // Obtiene el código aleatorio generado
+      var codigoAleatorio = document.getElementById('codigoAleatorio').textContent;
+
+      // Verifica si la contraseña ingresada coincide con el código aleatorio
+      if (contrasena === 'eliminar cuenta ' + codigoAleatorio) {
+          // Redirecciona al login después de eliminar la cuenta
+          window.location.href = '/eliminar_todos_los_usuarios/';
+      } else {
+          // Muestra un mensaje de error (puedes personalizar según tus necesidades)
+          alert('Contraseña incorrecta. Intenta de nuevo.');
+      }
+  }
+</script>
+
+
+
+
+
+
+
 </body>
 </html>
+
+
+
+
+
+
+

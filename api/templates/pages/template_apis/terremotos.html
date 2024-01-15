@@ -171,69 +171,119 @@
 
     <!-- Main content -->
     <section class="content">
-        <div class="container-fluid">
-            <!-- Small boxes (Stat box) -->
-
-            <!-- /.row -->
-            <!-- Main row -->
-            <div class="row">
-                <!-- Left col -->
-                <section class="col-lg-7 connectedSortable">
-                    <!-- Custom tabs (Charts with tabs)-->
-                    <!-- TO DO List -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">
-                                <i class="ion ion-clipboard mr-1"></i>
-                                Últimos Terremotos
-                            </h3>
-                        </div>
-                        <!-- /.card-header -->
-                        <ul>
-                            {% if terremotos %}
-                                {% for terremoto in terremotos %}
-                                    <li>
-                                        <strong>Magnitud:</strong> {{ terremoto.properties.mag }}<br>
-                                        <strong>Ubicación:</strong> {{ terremoto.properties.place }}<br>
-                                        <strong>Fecha y Hora:</strong> {{ terremoto.properties.time | date:"D d M Y H:i:s" }}<br>
-                                        <strong>Detalles:</strong> <a href="{{ terremoto.properties.url }}" target="_blank">Enlace</a><br>
-                                    </li>
-                                {% endfor %}
-                            {% else %}
-                                <li>{{ mensaje_error }}</li>
-                            {% endif %}
-                        </ul>
-                        <!-- /.card-body -->
-                    </div>
-                    <!-- /.card -->
-                </section>
-                <!-- /.Left col -->
-                <!-- right col (We are only adding the ID to make the widgets sortable)-->
-                <section class="col-lg-5 connectedSortable">
-                    <!-- Nueva Card para el Gráfico -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">
-                                <i class="ion ion-stats-bars mr-1"></i>
-                                Magnitud de los Terremotos
-                            </h3>
-                        </div>
-                        <div class="card-body">
-                            <!-- Contenedor del gráfico -->
-                            <canvas id="chart"></canvas>
-                        </div>
-                    </div>
-                    <!-- /.card -->
-
-                    <!-- Otras Cards Pueden Ser Agregadas Aquí -->
-                </section>
-                <!-- right col -->
-            </div>
-            <!-- /.row (main row) -->
-        </div><!-- /.container-fluid -->
-    </section>
-    <!-- /.content -->
+      <div class="container-fluid">
+          <div class="row">
+              <section class="col-lg-7 connectedSortable">
+                  <!-- Últimos Terremotos -->
+                  <div class="card">
+                      <div class="card-header">
+                          <h3 class="card-title">
+                              <i class="ion ion-clipboard mr-1"></i>
+                              Últimos Terremotos
+                          </h3>
+                      </div>
+                      <div class="card-body">
+                          <ul>
+                              {% if terremotos %}
+                                  {% for terremoto in terremotos %}
+                                      <li>
+                                          <strong>Magnitud:</strong> {{ terremoto.properties.mag }}<br>
+                                          <strong>Ubicación:</strong> {{ terremoto.properties.place }}<br>
+                                          <strong>Detalles:</strong> <a href="{{ terremoto.properties.url }}" target="_blank">Enlace</a><br>
+                                      </li>
+                                  {% endfor %}
+                              {% else %}
+                                  <li>{{ mensaje_error }}</li>
+                              {% endif %}
+                          </ul>
+                      </div>
+                  </div>
+              </section>
+  
+              <section class="col-lg-5 connectedSortable">
+                  <!-- Gráfica de Dona -->
+                  <div class="card">
+                      <div class="card-header">
+                          <h3 class="card-title">
+                              <i class="ion ion-pie-graph mr-1"></i>
+                              Distribución de Magnitudes
+                          </h3>
+                      </div>
+                      <div class="card-body">
+                          <!-- Contenedor de la gráfica de dona -->
+                          <canvas id="doughnutChart" style="height:250px"></canvas>
+                      </div>
+                  </div>
+  
+                  <!-- Gráfica de Barras (Tercera Gráfica) -->
+<div class="card">
+  <div class="card-header">
+      <h3 class="card-title">
+          <i class="ion ion-stats-bars"></i>
+          Magnitudes de Terremotos
+      </h3>
+  </div>
+  <div class="card-body">
+      <!-- Contenedor de la gráfica de barras -->
+      <canvas id="barChart" style="height:250px"></canvas>
+  </div>
 </div>
+
+<!-- Script para Crear la Tercera Gráfica de Barras -->
+<script>
+  var lugares = [{% for terremoto in terremotos %}"{{ terremoto.properties.place }}",{% endfor %}];
+  var magnitudes = [{% for terremoto in terremotos %}{{ terremoto.properties.mag }},{% endfor %}];
+
+  var ctxBar = document.getElementById("barChart").getContext('2d');
+  var myBarChart = new Chart(ctxBar, {
+      type: 'bar',
+      data: {
+          labels: lugares,
+          datasets: [{
+              label: 'Magnitud de los Terremotos',
+              data: magnitudes,
+              backgroundColor: 'rgba(75, 192, 192, 0.8)',
+              borderColor: 'rgba(75, 192, 192, 1)',
+              borderWidth: 2
+          }]
+      },
+      options: {
+          responsive: true,
+          scales: {
+              x: {
+                  grid: {
+                      display: false
+                  },
+                  ticks: {
+                      font: {
+                          size: 12
+                      }
+                  }
+              },
+              y: {
+                  grid: {
+                      color: 'rgba(0, 0, 0, 0.1)',
+                      lineWidth: 1
+                  },
+                  ticks: {
+                      font: {
+                          size: 12
+                      },
+                      beginAtZero: true
+                  }
+              }
+          }
+      }
+  });
+</script>
+
+              </section>
+          </div>
+      </div>
+  </section>
+  
+</div>
+
 
   <!-- /.content-wrapper -->
   <footer class="main-footer">
@@ -342,28 +392,54 @@
 
 
 
+<!-- Script para Crear el Gráfico de Dona -->
 <script>
-  // Obtener datos de magnitud y lugar
-  var magnitudes = [
-      {% for terremoto in terremotos %}
-          {{ terremoto.properties.mag }},
-      {% endfor %}
-  ];
+  var lugares = [{% for terremoto in terremotos %}"{{ terremoto.properties.place }}",{% endfor %}];
+  var magnitudes = [{% for terremoto in terremotos %}{{ terremoto.properties.mag }},{% endfor %}];
 
-  var lugares = [
-      {% for terremoto in terremotos %}
-          "{{ terremoto.properties.place }}",
-      {% endfor %}
-  ];
+  var ctxD = document.getElementById("doughnutChart").getContext('2d');
+  var myDoughnutChart = new Chart(ctxD, {
+      type: 'doughnut',
+      data: {
+          labels: lugares,
+          datasets: [{
+              data: magnitudes,
+              backgroundColor: [
+                  'rgba(255, 99, 132, 0.8)',
+                  'rgba(54, 162, 235, 0.8)',
+                  'rgba(255, 206, 86, 0.8)',
+                  'rgba(75, 192, 192, 0.8)',
+                  'rgba(153, 102, 255, 0.8)',
+                  'rgba(255, 159, 64, 0.8)'
+              ],
+              hoverBackgroundColor: [
+                  'rgba(255, 99, 132, 1)',
+                  'rgba(54, 162, 235, 1)',
+                  'rgba(255, 206, 86, 1)',
+                  'rgba(75, 192, 192, 1)',
+                  'rgba(153, 102, 255, 1)',
+                  'rgba(255, 159, 64, 1)'
+              ]
+          }]
+      },
+      options: {
+          responsive: true
+      }
+  });
+</script>
 
-  // Crear un gráfico de barras
-  var ctx = document.getElementById('chart').getContext('2d');
-  var myChart = new Chart(ctx, {
+<!-- Script para Crear la Tercera Gráfica de Barras -->
+<script>
+  var lugares = [{% for terremoto in terremotos %}"{{ terremoto.properties.place }}",{% endfor %}];
+  var magnitudes = [{% for terremoto in terremotos %}{{ terremoto.properties.mag }},{% endfor %}];
+
+  var ctxBar = document.getElementById("barChart").getContext('2d');
+  var myBarChart = new Chart(ctxBar, {
       type: 'bar',
       data: {
           labels: lugares,
           datasets: [{
-              label: 'Magnitud de los terremotos',
+              label: 'Magnitud de los Terremotos',
               data: magnitudes,
               backgroundColor: 'rgba(75, 192, 192, 0.2)',
               borderColor: 'rgba(75, 192, 192, 1)',
@@ -371,11 +447,7 @@
           }]
       },
       options: {
-          scales: {
-              y: {
-                  beginAtZero: true
-              }
-          }
+          responsive: true
       }
   });
 </script>
