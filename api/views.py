@@ -118,8 +118,7 @@ class Login(View):
                     login(request, user)
 
                     # Redirigir al usuario a la página deseada después del inicio de sesión
-                    next_url = request.GET.get('next', 'home1')
-                    return redirect(next_url)
+                    return redirect('home1')
                 else:
                     error_message = "Contraseña incorrecta"
             except Usuario.DoesNotExist:
