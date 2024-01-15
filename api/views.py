@@ -9,7 +9,7 @@ from django.contrib.auth import login, logout, authenticate
 from django.db import IntegrityError
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
-from django.http import HttpResponse , HttpRequest
+from django.http import HttpResponse , HttpRequest, HttpResponseRedirect
 from .forms import UsuarioForm
 from .models import *
 from django.contrib.auth.decorators import login_required
@@ -17,9 +17,21 @@ from django.contrib.auth.hashers import check_password
 from smtplib import SMTPException
 from django.utils.crypto import get_random_string
 from django.contrib import messages
-
+from django.contrib.auth.decorators import login_required
 import random
 from django.contrib.auth.hashers import make_password
+import googlemaps
+import requests
+
+
+
+
+
+from django.views import View
+from django.utils.decorators import method_decorator
+
+
+
 
 
 #-------------------------------------------------------------------------------------------------------------#
@@ -30,12 +42,12 @@ from django.contrib.auth.hashers import make_password
 #-------------------------------------------------------------------------------------------------------------#
 #-------------------------------------------------------------------------------------------------------------#
 
-import googlemaps
-import requests
+
 
 def tu_vista(request):
     api_key = settings.GOOGLE_MAPS_API_KEY
     return render(request, 'pages/template_apis/mapa.html', {'api_key': api_key})
+
 
 def vista_tiempo(request):
     return render(request, 'pages/template_apis/clima.html')
@@ -83,6 +95,9 @@ def vista_terremotos(request):
 #-------------------------------------------------------------------------------------------------------------#
 
 
+
+
+
 class Login(View):
     template_name = "pages/registration/login.html"
 
@@ -96,40 +111,49 @@ class Login(View):
             correo = form.cleaned_data.get('correoUsuario')
             password = form.cleaned_data.get('contraUsuario')
 
-            # Autenticar al usuario
-            user = authenticate(request, correoUsuario=correo, contraUsuario=password)
-            print(f'Usuario: {user}, Correo: {correo}, Contraseña: {password}')
-
-            if user is not None:
-                # Usuario autenticado, iniciar sesión
-                login(request, user)
-                print('Usuario autenticado')
-                return redirect('home2')
-
-        print('Credenciales inválidas')
-        return render(request, self.template_name, {'form': form})
-    
-    def post(self, request):
-        form = UsuarioForm(data=request.POST)
-        if form.is_valid():
-            correo = form.cleaned_data.get('correoUsuario')
-            password = form.cleaned_data.get('contraUsuario')
-            print(f'Credenciales: Correo: {correo}, Contraseña: {password}')
-
             try:
                 user = Usuario.objects.get(correoUsuario=correo)
-                if check_password(password, user.contraUsuario):
-                    print(f'Usuario autenticado: {user}')
+                if user.check_password(password):
+                    # Usuario autenticado, iniciar sesión
                     login(request, user)
-                    return redirect('home2')
-                else:
-                    print('Contraseña incorrecta')
-            except Usuario.DoesNotExist:
-                print('Usuario no encontrado')
-        else:
-            print("Formulario no válido. Errores:", form.errors)
 
-        return render(request, self.template_name, {'form': form})
+                    # Redirigir al usuario a la página deseada después del inicio de sesión
+                    next_url = request.GET.get('next', 'home1')
+                    return redirect(next_url)
+                else:
+                    error_message = "Contraseña incorrecta"
+            except Usuario.DoesNotExist:
+                error_message = "Usuario no encontrado"
+        else:
+            error_message = "Formulario no válido. Verifica los errores indicados."
+
+        return render(request, self.template_name, {'form': form, 'error_message': error_message})
+
+
+
+class Home1(View):
+    template_name = "index.html"
+
+    def get(self, request, *args, **kwargs):
+        context = {'user': request.user if hasattr(request, 'user') else None}
+        return render(request, self.template_name, context)
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+    
+    
+
+
 
 #-------------------------------------------------------------------------------------------------------------#
 #-------------------------------------------------------------------------------------------------------------#
@@ -210,33 +234,6 @@ class Recover_password(View):
        
 
 
-class IngresarCodigo(View):
-    template_name = "pages/examples/ingresar-codigo.html"
-
-    def get(self, request, correo):
-        return render(request, self.template_name, {'correo': correo})
-
-    def post(self, request, correo):
-        codigo = request.POST.get('codigo')
-        nueva_contrasena = request.POST.get('nueva_contrasena')
-
-        try:
-            usuario = Usuario.objects.get(correoUsuario=correo, codigo_recuperacion=codigo)
-            
-            # Validar el código (puedes agregar más lógica según tus necesidades)
-
-            # Actualizar la contraseña
-            usuario.contraUsuario = make_password(nueva_contrasena)
-            usuario.codigo_recuperacion = None  # Limpiar el código de recuperación
-            usuario.save()
-
-            messages.success(request, 'Contraseña actualizada correctamente. Puedes iniciar sesión con la nueva contraseña.')
-            return redirect('login')  # Puedes redirigir a donde desees después de la actualización
-
-        except Usuario.DoesNotExist:
-            messages.error(request, 'Código de recuperación no válido. Intenta de nuevo o solicita un nuevo código.')
-            return redirect('ingresar_codigo', correo=correo)
-
 
 
 #-------------------------------------------------------------------------------------------------------------#
@@ -306,42 +303,35 @@ class FormularioUsuarioView(View):
 #-------------------------------------------------------------------------------------------------------------#
 #-------------------------------------------------------------------------------------------------------------#
 
-
 class Main(APIView):
     template_name = "index.html"
 
     def get(self, request):
         context = {'user': request.user}
-        print(request.user)  # Agrega esta línea para imprimir información de usuario en la consola
+        print(request.user) 
         return render(request, self.template_name, context)
 
-    
-class Home1(APIView):
-    template_name = "index.html"
 
-    def get(self, request):
-        context = {'user': request.user}
-        return render(request, self.template_name, context)
 
 
 class Home2(APIView):
     template_name = "index2.html"
-    def get(self, request):
-            return render(request, self.template_name)
-    
-class Home3(APIView):
-    template_name = "index3.html"
+
     def get(self, request):
         return render(request, self.template_name)
-    
+
+class Home3(APIView):
+    template_name = "index3.html"
+
+    def get(self, request):
+        return render(request, self.template_name)
 
 class Widgets(APIView):
     template_name = "pages/widgets.html"
+
+  
     def get(self, request):
         return render(request, self.template_name)
-
-
-
 
 
 

@@ -20,6 +20,7 @@ if RENDER_EXTERNAL_HOSTNAME:
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
 
+
 INSTALLED_APPS = [
     'api',
     'rest_framework',
@@ -85,7 +86,7 @@ WSGI_APPLICATION = 'APIANGEL.wsgi.application'
 #         'PASSWORD': 'WVO5wM6oxnDiNyLY9CdRjTTOvrrCz4bl',
 #     }
 # }
-
+LOGIN_REDIRECT_URL = 'home1'
 DATABASES = {
     'default': dj_database_url.parse(os.environ.get("DATABASE_URL"))
 
