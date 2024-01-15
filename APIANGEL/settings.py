@@ -86,8 +86,7 @@ WSGI_APPLICATION = 'APIANGEL.wsgi.application'
 #         'PASSWORD': 'WVO5wM6oxnDiNyLY9CdRjTTOvrrCz4bl',
 #     }
 # }
-SESSION_COOKIE_AGE = 60 * 15  # 15 minutos en segundos
-SESSION_SAVE_EVERY_REQUEST = True
+
 DATABASES = {
     'default': dj_database_url.parse(os.environ.get("DATABASE_URL"))
 

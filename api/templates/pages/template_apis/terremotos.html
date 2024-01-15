@@ -153,89 +153,88 @@
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
     <div class="content-header">
-      <div class="container-fluid">
-        <div class="row mb-2">
-          <div class="col-sm-6">
-            <h1 class="m-0">Terremotos</h1>
-          </div><!-- /.col -->
-          <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a>Terremotos</a></li>
-              <li class="breadcrumb-item active">Aplicaciones</li>
-            </ol>
-          </div><!-- /.col -->
-        </div><!-- /.row -->
-      </div><!-- /.container-fluid -->
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0">Terremotos</h1>
+                </div><!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a>Terremotos</a></li>
+                        <li class="breadcrumb-item active">Aplicaciones</li>
+                    </ol>
+                </div><!-- /.col -->
+            </div><!-- /.row -->
+        </div><!-- /.container-fluid -->
     </div>
     <!-- /.content-header -->
 
     <!-- Main content -->
     <section class="content">
-      <div class="container-fluid">
-        <!-- Small boxes (Stat box) -->
-        
-        <!-- /.row -->
-        <!-- Main row -->
-        <div class="row">
-          <!-- Left col -->
-          <section class="col-lg-7 connectedSortable">
-            <!-- Custom tabs (Charts with tabs)-->
+        <div class="container-fluid">
+            <!-- Small boxes (Stat box) -->
 
+            <!-- /.row -->
+            <!-- Main row -->
+            <div class="row">
+                <!-- Left col -->
+                <section class="col-lg-7 connectedSortable">
+                    <!-- Custom tabs (Charts with tabs)-->
+                    <!-- TO DO List -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="ion ion-clipboard mr-1"></i>
+                                Últimos Terremotos
+                            </h3>
+                        </div>
+                        <!-- /.card-header -->
+                        <ul>
+                            {% if terremotos %}
+                                {% for terremoto in terremotos %}
+                                    <li>
+                                        <strong>Magnitud:</strong> {{ terremoto.properties.mag }}<br>
+                                        <strong>Ubicación:</strong> {{ terremoto.properties.place }}<br>
+                                        <strong>Fecha y Hora:</strong> {{ terremoto.properties.time | date:"D d M Y H:i:s" }}<br>
+                                        <strong>Detalles:</strong> <a href="{{ terremoto.properties.url }}" target="_blank">Enlace</a><br>
+                                    </li>
+                                {% endfor %}
+                            {% else %}
+                                <li>{{ mensaje_error }}</li>
+                            {% endif %}
+                        </ul>
+                        <!-- /.card-body -->
+                    </div>
+                    <!-- /.card -->
+                </section>
+                <!-- /.Left col -->
+                <!-- right col (We are only adding the ID to make the widgets sortable)-->
+                <section class="col-lg-5 connectedSortable">
+                    <!-- Nueva Card para el Gráfico -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="ion ion-stats-bars mr-1"></i>
+                                Magnitud de los Terremotos
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <!-- Contenedor del gráfico -->
+                            <canvas id="chart"></canvas>
+                        </div>
+                    </div>
+                    <!-- /.card -->
 
-
-            <!-- TO DO List -->
-            <div class="card">
-              <div class="card-header">
-                <h3 class="card-title">
-                  <i class="ion ion-clipboard mr-1"></i>
-                  Últimos Terremotos
-                </h3>
-
-         
-              </div>
-              <!-- /.card-header -->
-              <ul>
-                {% if terremotos %}
-                    {% for terremoto in terremotos %}
-                        <li>
-                            <strong>Magnitud:</strong> {{ terremoto.properties.mag }}<br>
-                            <strong>Ubicación:</strong> {{ terremoto.properties.place }}<br>
-                            <strong>Fecha y Hora:</strong> {{ terremoto.properties.time | date:"D d M Y H:i:s" }}<br>
-                            <strong>Detalles:</strong> <a href="{{ terremoto.properties.url }}" target="_blank">Enlace</a><br>
-                        </li>
-                    {% endfor %}
-                {% else %}
-                    <li>{{ mensaje_error }}</li>
-                {% endif %}
-            </ul>
-            <canvas id="chart"></canvas>
-              <!-- /.card-body -->
-              
+                    <!-- Otras Cards Pueden Ser Agregadas Aquí -->
+                </section>
+                <!-- right col -->
             </div>
-            <!-- /.card -->
-          </section>
-          <!-- /.Left col -->
-          <!-- right col (We are only adding the ID to make the widgets sortable)-->
-          <section class="col-lg-5 connectedSortable">
-
-
-            <!-- /.card -->
-
-            <!-- solid sales graph -->
-
-            <!-- /.card -->
-
-            <!-- Calendar -->
-   
-            <!-- /.card -->
-          </section>
-          <!-- right col -->
-        </div>
-        <!-- /.row (main row) -->
-      </div><!-- /.container-fluid -->
+            <!-- /.row (main row) -->
+        </div><!-- /.container-fluid -->
     </section>
     <!-- /.content -->
-  </div>
+</div>
+
   <!-- /.content-wrapper -->
   <footer class="main-footer">
    
