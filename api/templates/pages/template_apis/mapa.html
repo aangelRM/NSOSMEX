@@ -5,9 +5,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Mapa de Google</title>
+  <title>NSOSMEX | Mapa</title>
     <!-- Incluye la API de Google Maps con tu clave -->
     <script src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&libraries=places" async defer></script>
+    <!-- Agrega esto en tu head para cargar el ícono personalizado -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+
     <style>
         /* Ajusta el tamaño del mapa según sea necesario */
         #map {
@@ -21,35 +24,132 @@
                 height: 300px; /* Ajusta la altura para pantallas más pequeñas */
             }
         }
+        /* Agrega esto al área de estilos de tu archivo CSS */
+        .ventana-emergente {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+    
+        .contenido {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            animation: fadeIn 0.3s ease-in-out forwards; /* Agrega animación de entrada */
+        }
+    
+        .cerrar {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    
+        .cerrar:hover,
+        .cerrar:focus {
+            color: black;
+        }
+    
+        .codigo {
+            color: red;
+            font-weight: bold;
+        }
+    
+        /* Agrega animación de salida */
+        .ventana-emergente.fade-out .contenido {
+            animation: fadeOut 0.3s ease-in-out forwards;
+        }
+    
+        .ventana-emergente.fade-out {
+            animation: fadeOutBackground 0.3s ease-in-out forwards;
+        }
+    
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+    
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
+        }
+    
+        @keyframes fadeOutBackground {
+            from {
+                background-color: rgba(0, 0, 0, 0.5);
+            }
+            to {
+                background-color: rgba(0, 0, 0, 0);
+            }
+        }
     </style>
   {% include "pages/includes/headindexs.html" %}
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
-<div class="wrapper">
-  {% include "pages/includes/preloader.html" %}
-
-
-
-  <nav class="main-header navbar navbar-expand navbar-white navbar-light">
-  {% include "pages/includes/navbar.html" %}
-  {% include "pages/includes/messages_menu.html" %}
-  {% include "pages/includes/notifications_dropdown_menu.html" %}
+  <div class="wrapper">
+    {% include "pages/includes/preloader.html" %}
+  
+    {% include "pages/includes/navbar.html" %}
   <!-- /.navbar -->
+</ul>
+</nav>
 
 
+ <!-- Main Sidebar Container -->
+ <aside class="main-sidebar sidebar-dark-primary elevation-4">
+  <!-- Brand Logo -->
+  <a class="brand-link">
+    <img src="{% static "img/backgrounds/dist/img/AdminLTELogo.png" %}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+    <span class="brand-text font-weight-light">NSOSMEX</span>
+  </a>
+  <!-- Sidebar -->
+  <div class="sidebar">
+  <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+    <div class="image">
+      <img src="{% static "img/backgrounds/dist/img/user2-160x160.jpg" %}" class="img-circle elevation-2" alt="User Image">
+    </div>
+    <div class="info">
+      {% if user.is_authenticated %}
+        <a href="#" onclick="mostrarVentanaEliminar()" class="d-block">{{ user.nombreUsuario }}</a>
+      {% else %}
+        <!-- Puedes mostrar algo diferente si el usuario no está autenticado -->
+        <a href="#" class="d-block" onclick="mostrarVentanaEliminar()">Usuario no autenticado</a>
+        <!-- Agrega esto donde quieras que aparezca el enlace para eliminar la cuenta -->
+        {% endif %}
+     
 
-  <!-- Main Sidebar Container -->
-  <aside class="main-sidebar sidebar-dark-primary elevation-4">
-    <!-- Brand Logo -->
-    <a class="brand-link">
-      <img src="{% static "img/backgrounds/dist/img/AdminLTELogo.png" %}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-      <span class="brand-text font-weight-light">NSOSMEX</span>
-    </a>
-    <!-- Sidebar -->
+<!-- Agrega esta ventana emergente oculta -->
+<div id="ventanaEliminar" class="ventana-emergente">
+<div class="contenido">
+    <span class="cerrar" onclick="cerrarVentanaEliminar()">&times;</span>
+    <p>¿Seguro que quieres eliminar la cuenta?</p>
+    <p>Ingresa lo siguiente: <span class="codigo">eliminar cuenta <span id="codigoAleatorio"></span></span></p>
+    <input type="text" class="form-control mb-2" id="contrasenaEliminar" placeholder="Ingresa la contraseña" onclick="limpiarCampo()">
+    <button id="botonEliminar" class="btn btn-danger mr-2" onclick="eliminarCuenta()">Eliminar</button>
+    <button class="btn btn-secondary" onclick="cerrarVentanaEliminar()">Cancelar</button>
+</div>
+</div>
 
-    {% include "pages/includes/slidebar.html" %}
-
-
+ 
+    </div>
+  </div>
 <!-- SidebarSearch Form -->
 {% include "pages/includes/search.html" %}
 
@@ -64,12 +164,11 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0">Apis</h1>
           </div><!-- /.col -->
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active">Apis</li>
+              <li class="breadcrumb-item"><a>Mapa</a></li>
+              <li class="breadcrumb-item active">Aplicaciones</li>
             </ol>
           </div><!-- /.col -->
         </div><!-- /.row -->
@@ -84,219 +183,287 @@
         <div class="row">
           <h1>Mapa</h1>
 <div id="map"></div>
-{% comment %}
-          <div class="col-lg-3 col-6">
-            <!-- small box -->
-            <div class="small-box bg-info">
-               <div class="inner">
-                <h3>150</h3>
 
-                <p>New Orders</p>
-              <div class="icon">
-                <i class="ion ion-bag"></i>
-              </div>
-              <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-            </div>
-          </div>
-              
-
-          <!-- ./col -->
-          
-          <div class="col-lg-3 col-6">
-            <!-- small box -->
-            <div class="small-box bg-success">
-              <div class="inner">
-                <h3>53<sup style="font-size: 20px">%</sup></h3>
-
-                <p>Bounce Rate</p>
-              </div>
-              <div class="icon">
-                <i class="ion ion-stats-bars"></i>
-              </div>
-              <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-            </div>
-          </div>
-          
-          <!-- ./col -->
-          <div class="col-lg-3 col-6">
-            <!-- small box -->
-            <div class="small-box bg-warning">
-              <div class="inner">
-                <h3>44</h3>
-
-                <p>User Registrations</p>
-              </div>
-              <div class="icon">
-                <i class="ion ion-person-add"></i>
-              </div>
-              <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-            </div>
-          </div>
-          </div> 
-          <!-- ./col -->
-          <div class="col-lg-3 col-6">
-            <!-- small box -->
-            <div class="small-box bg-danger">
-              <div class="inner">
-                <h3>65</h3>
-
-                <p>Unique Visitors</p>
-              </div>
-              <div class="icon">
-                <i class="ion ion-pie-graph"></i>
-              </div>
-              <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-            </div>
-          </div>
-          {% endcomment %}
-          <!-- ./col -->
         <!-- En mapa.html -->
 
+        {% block content %}
+        
+        <div id="map" style="height: 500px;"></div>
+        
+        <script>
 
-{% block content %}
+          var userMarker;
+var selectedMarkers = [];
+var directionsRenderer; // Declarar directionsRenderer como una variable global
 
-
-<script>
-function initMap() {
-    // Verifica si la clave de API está presente
-    var apiKey = '{{ api_key }}';
-    if (!apiKey) {
-        console.error('Clave de API de Google Maps no especificada.');
-        return;
-    }
-
-    // Configuración del mapa
-    var mapOptions = {
-        center: { lat: -34.397, lng: 150.644 },
-        zoom: 8
-    };
-
-    // Creación del mapa
-    var map = new google.maps.Map(document.getElementById('map'), mapOptions);
-    var trafficLayer = new google.maps.TrafficLayer();
-    trafficLayer.setMap(map);
-
-    // Manejo de errores al cargar la API de Google Maps
-    google.maps.event.addListenerOnce(map, 'tilesloaded', function() {
-        // El mapa se ha cargado correctamente
-        console.log('Mapa cargado correctamente.');
-    });
-
-    google.maps.event.addListenerOnce(map, 'error', function() {
-        console.error('Error al cargar el mapa.');
-    });
-
-    // Verifica si el navegador admite la geolocalización
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            function(position) {
-                // Éxito al obtener la ubicación del usuario
-                var userLocation = {
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude
-                };
-
-                // Muestra la ubicación del usuario en el mapa
-                var userMarker = new google.maps.Marker({
-                    position: userLocation,
-                    map: map,
-                    title: 'Tu ubicación'
-                });
-
-                // Centra el mapa en la ubicación del usuario
-                map.setCenter(userLocation);
-
-                // Busca lugares de emergencia cercanos
-                searchEmergencyPlaces(map, userLocation);
-
-                // Agrega un evento de clic al mapa para colocar marcadores
-                google.maps.event.addListener(map, 'click', function(event) {
-                    placeMarker(event.latLng, map);
-                });
-            },
-            function(error) {
-                // Error al obtener la ubicación del usuario
-                console.error('Error al obtener la ubicación del usuario:', error);
+          
+          function initMap() {
+              // Verifica si la clave de API está presente
+              var apiKey = '{{ api_key }}';
+              if (!apiKey) {
+                  console.error('Clave de API de Google Maps no especificada.');
+                  return;
+              }
+          
+              // Configuración del mapa
+              var mapOptions = {
+                  center: { lat: -34.397, lng: 150.644 },
+                  zoom: 8
+              };
+          
+              // Creación del mapa
+              var map = new google.maps.Map(document.getElementById('map'), mapOptions);
+              var trafficLayer = new google.maps.TrafficLayer();
+              trafficLayer.setMap(map);
+          
+              // Manejo de errores al cargar la API de Google Maps
+              google.maps.event.addListenerOnce(map, 'tilesloaded', function () {
+                  // El mapa se ha cargado correctamente
+                  console.log('Mapa cargado correctamente.');
+              });
+              
+          
+              google.maps.event.addListenerOnce(map, 'error', function () {
+                  console.error('Error al cargar el mapa.');
+              });
+          
+              // Verifica si el navegador admite la geolocalización
+              if (navigator.geolocation) {
+                  navigator.geolocation.getCurrentPosition(
+                      function (position) {
+                          // Éxito al obtener la ubicación del usuario
+                          var userLocation = {
+                              lat: position.coords.latitude,
+                              lng: position.coords.longitude
+                          };
+          
+                          // Muestra la ubicación del usuario en el mapa
+                          userMarker = new google.maps.Marker({
+                              position: userLocation,
+                              map: map,
+                              title: 'Tu ubicación'
+                          });
+          
+                          // Centra el mapa en la ubicación del usuario
+                          map.setCenter(userLocation);
+          
+                          // Busca lugares de emergencia cercanos
+                          searchEmergencyPlaces(map, userLocation);
+          
+                          // Agrega un evento de clic al mapa para colocar marcadores
+                          google.maps.event.addListener(map, 'click', function (event) {
+                              placeMarker(event.latLng, map);
+                          });
+                      },
+                      function (error) {
+                          // Error al obtener la ubicación del usuario
+                          console.error('Error al obtener la ubicación del usuario:', error);
+                      }
+                  );
+              } else {
+                  // El navegador no admite la geolocalización
+                  console.error('La geolocalización no está soportada por este navegador.');
+              }
+          
+              // Añade un evento de clic al botón para calcular la ruta
+              document.getElementById('calcularRutaBtn').addEventListener('click', function () {
+                  calculateRouteToSelectedMarkers(map, userMarker.getPosition(), selectedMarkers);
+              });
+          }
+          
+          function removeMarker(marker) {
+            marker.setMap(null); // Esto quitará el marcador del mapa
+        
+            // Eliminar la capa de direcciones (ruta)
+            clearDirections();
+        }
+        
+        // Función para limpiar la capa de direcciones (ruta)
+        function clearDirections() {
+            if (directionsRenderer) {
+                directionsRenderer.setMap(null);
+                directionsRenderer = null;
             }
-        );
-    } else {
-        // El navegador no admite la geolocalización
-        console.error('La geolocalización no está soportada por este navegador.');
-    }
+        }
+        
+        
+          
+          // Función para buscar lugares de emergencia cercanos
+          function searchEmergencyPlaces(map, location) {
+              var service = new google.maps.places.PlacesService(map);
+          
+              // Parámetros para buscar lugares de emergencia para la policía
+              var policeRequest = {
+                  location: location,
+                  radius: 5000,
+                  keyword: 'policía'
+              };
+          
+              // Parámetros para buscar lugares de emergencia para los bomberos
+              var fireRequest = {
+                  location: location,
+                  radius: 5000,
+                  keyword: 'bomberos'
+              };
+          
+              // Parámetros para buscar lugares de emergencia para la salud (por ejemplo, IMSS)
+              var healthRequest = {
+                  location: location,
+                  radius: 5000,
+                  keyword: 'health'
+              };
+          
+              // Realiza la búsqueda para la policía
+              service.nearbySearch(policeRequest, function (policeResults, policeStatus) {
+                  if (policeStatus == google.maps.places.PlacesServiceStatus.OK) {
+                      for (var i = 0; i < policeResults.length; i++) {
+                          createMarker(policeResults[i], map);
+                      }
+                  } else {
+                      console.error('Error al buscar lugares de policía:', policeStatus);
+                  }
+              });
+          
+              // Realiza la búsqueda para los bomberos
+              service.nearbySearch(fireRequest, function (fireResults, fireStatus) {
+                  if (fireStatus == google.maps.places.PlacesServiceStatus.OK) {
+                      for (var i = 0; i < fireResults.length; i++) {
+                          createMarker(fireResults[i], map);
+                      }
+                  } else {
+                      console.error('Error al buscar lugares de bomberos:', fireStatus);
+                  }
+              });
+          
+              // Realiza la búsqueda para la health
+              service.nearbySearch(healthRequest, function (healthResults, healthStatus) {
+                  if (healthStatus == google.maps.places.PlacesServiceStatus.OK) {
+                      for (var i = 0; i < healthResults.length; i++) {
+                          createMarker(healthResults[i], map);
+                      }
+                  } else {
+                      console.error('Error al buscar lugares de health:', healthStatus);
+                  }
+              });
+          }
+          
+          // Función para obtener la URL del ícono basado en el tipo de lugar
+          function getIconUrlForPlace(place) {
+              // Verifica si el lugar es un cuerpo de policía
+              if (place.types.includes('police')) {
+                  return 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png'; // Ícono de policía
+              }
+          
+              // Verifica si el lugar es un cuerpo de bomberos
+              if (place.types.includes('fire_station')) {
+                  return 'https://maps.google.com/mapfiles/ms/icons/red-dot.png'; // Ícono de bomberos
+              }
+          
+              // Verifica si el lugar es una institución de salud (por ejemplo, IMSS)
+              if (place.types.includes('health')) {
+                  return 'https://maps.google.com/mapfiles/ms/icons/green-dot.png'; // Ícono para salud (color verde)
+              }
+          
+              // Ícono predeterminado
+              return 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png';
+          }
+          
+          // Función para crear un marcador para un lugar de emergencia
+          function createMarker(place, map) {
+              // Obtén la URL del ícono basado en el tipo de lugar
+              var iconUrl = getIconUrlForPlace(place);
+          
+              var iconSize = new google.maps.Size(32, 32);
+          
+              // Ajusta el tamaño del ícono para la policía, bomberos y salud
+              if (place.types.includes('police') || place.types.includes('fire_station') || place.types.includes('health')) {
+                  iconSize = new google.maps.Size(48, 48);
+              }
+          
+              var icon = {
+                  url: iconUrl,
+                  scaledSize: iconSize,
+              };
+          
+              // Crea el marcador
+              var marker = new google.maps.Marker({
+                  map: map,
+                  position: place.geometry.location,
+                  title: place.name,
+                  icon: icon,  // Utiliza el ícono personalizado
+              });
+          
+              // Agrega un evento de clic al marcador para obtener indicaciones
+              marker.addListener('click', function() {
+                  calculateRoute(map, userMarker.getPosition(), place.geometry.location);
+              });
+          }
+          
 
-    // Función para buscar lugares de emergencia cercanos
-    function searchEmergencyPlaces(map, location) {
-        var service = new google.maps.places.PlacesService(map);
+// Función para agregar un marcador en la ubicación seleccionada por el usuario
+function placeMarker(location, map) {
+  // Crea un marcador temporal sin agregarlo al mapa
+  var tempMarker = new google.maps.Marker({
+      position: location,
+      title: 'Lugar seleccionado (temporal)'
+  });
 
-        // Parámetros para buscar lugares de emergencia
-        var request = {
-            location: location,
-            radius: 5000,
-            type: ['  ']
-        };
+  // Obtén indicaciones hacia el lugar seleccionado desde la ubicación del usuario
+  calculateRoute(map, userMarker.getPosition(), location);
 
-        service.nearbySearch(request, function(results, status) {
-            if (status == google.maps.places.PlacesServiceStatus.OK) {
-                for (var i = 0; i < results.length; i++) {
-                    createMarker(results[i], map);
-                }
-            } else {
-                console.error('Error al buscar lugares de emergencia:', status);
-            }
-        });
-    }
+  // Crea el marcador final solo si no hay otro marcador en el mismo lugar
+  var isMarkerAlreadyExists = selectedMarkers.some(function(marker) {
+      return marker.getPosition().equals(tempMarker.getPosition());
+  });
 
-    // Función para crear un marcador para un lugar de emergencia
-    function createMarker(place, map) {
-        var marker = new google.maps.Marker({
-            map: map,
-            position: place.geometry.location,
-            title: place.name
-        });
+  if (!isMarkerAlreadyExists) {
+      var marker = new google.maps.Marker({
+          position: location,
+          map: map,
+          title: 'Lugar seleccionado'
+      });
 
-        // Agrega un evento de clic al marcador para obtener indicaciones
-        marker.addListener('click', function() {
-            calculateRoute(map, userMarker.getPosition(), place.geometry.location);
-        });
-    }
+      // Almacena el marcador en la matriz de marcadores seleccionados
+      selectedMarkers.push(marker);
 
-    // Función para agregar un marcador en la ubicación seleccionada por el usuario
-    function placeMarker(location, map) {
-        var marker = new google.maps.Marker({
-            position: location,
-            map: map,
-            title: 'Lugar seleccionado'
-        });
-
-        // Obtén indicaciones hacia el lugar seleccionado desde la ubicación del usuario
-        calculateRoute(map, userMarker.getPosition(), location);
-    }
-
-    // Función para calcular y mostrar la ruta entre dos ubicaciones
-    function calculateRoute(map, origin, destination) {
-        var directionsService = new google.maps.DirectionsService();
-        var directionsRenderer = new google.maps.DirectionsRenderer({
-            map: map
-        });
-
-        directionsService.route(
-            {
-                origin: origin,
-                destination: destination,
-                travelMode: 'DRIVING'
-            },
-            function(response, status) {
-                if (status === 'OK') {
-                    directionsRenderer.setDirections(response);
-                } else {
-                    console.error('Error al calcular la ruta:', status);
-                }
-            }
-        );
-    }
+      // Agrega un evento de clic al marcador para eliminarlo
+      marker.addListener('click', function() {
+          removeMarker(marker);
+      });
+  }
 }
 
-</script>
+
+          
+function calculateRoute(map, origin, destination) {
+  var directionsService = new google.maps.DirectionsService();
+  
+  // Crear una nueva instancia de DirectionsRenderer si aún no existe
+  if (!directionsRenderer) {
+      directionsRenderer = new google.maps.DirectionsRenderer({
+          map: map
+      });
+  }
+
+  directionsService.route(
+      {
+          origin: origin,
+          destination: destination,
+          travelMode: 'DRIVING'
+      },
+      function(response, status) {
+          if (status === 'OK') {
+              directionsRenderer.setDirections(response);
+          } else {
+              console.error('Error al calcular la ruta:', status);
+          }
+      }
+  );
+}
+
+          
+          </script>
+          
 <script async defer
    src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&libraries=places&callback=initMap">
 </script>
@@ -348,8 +515,52 @@ function initMap() {
 <!-- AdminLTE App -->
 <script src="{% static "js/dist/js/adminlte.js" %}"></script>
 <!-- AdminLTE for demo purposes -->
-<script src="{% static "js/dist/js/demo.js" %}"></script>
 <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
 <script src="{% static "js/dist/js/pages/dashboard.js" %}"></script>
+
+<script>
+  function mostrarVentanaEliminar() {
+      // Limpia el contenido del campo de texto
+      limpiarCampo();
+
+      // Genera y muestra el código aleatorio
+      var codigoAleatorio = generarCodigoAleatorio();
+      document.getElementById('codigoAleatorio').textContent = codigoAleatorio;
+      document.getElementById('ventanaEliminar').style.display = 'block';
+  }
+
+  function cerrarVentanaEliminar() {
+      // Oculta la ventana emergente
+      document.getElementById('ventanaEliminar').style.display = 'none';
+  }
+
+  function limpiarCampo() {
+      // Limpia el contenido del campo de texto
+      document.getElementById('contrasenaEliminar').value = '';
+  }
+
+  function generarCodigoAleatorio() {
+      // Genera y retorna un número aleatorio de 6 dígitos
+      return Math.floor(100000 + Math.random() * 900000);
+  }
+
+  function eliminarCuenta() {
+      // Obtiene la contraseña ingresada por el usuario
+      var contrasena = document.getElementById('contrasenaEliminar').value;
+
+      // Obtiene el código aleatorio generado
+      var codigoAleatorio = document.getElementById('codigoAleatorio').textContent;
+
+      // Verifica si la contraseña ingresada coincide con el código aleatorio
+      if (contrasena === 'eliminar cuenta ' + codigoAleatorio) {
+          // Redirecciona al login después de eliminar la cuenta
+          window.location.href = '/eliminar_todos_los_usuarios/';
+      } else {
+          // Muestra un mensaje de error (puedes personalizar según tus necesidades)
+          alert('Contraseña incorrecta. Intenta de nuevo.');
+      }
+  }
+</script>
+
 </body>
 </html>

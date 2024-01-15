@@ -58,7 +58,7 @@ def obtener_terremotos_mexico():
     parametros = {
         'format': 'geojson',
         'starttime': '2023-01-01',
-        'minmagnitude': 5.0,
+        'minmagnitude': 4.0,
         'maxlatitude': 32.718,
         'minlatitude': 14.532,
         'maxlongitude': -86.593,
@@ -129,6 +129,10 @@ class Login(View):
 
         return render(request, self.template_name, {'form': form, 'error_message': error_message})
 
+
+def logout_view(request):
+    logout(request)
+    return redirect('login')  # Reemplaza 'login' con el nombre de tu vista de login
 
 
 class Home1(View):

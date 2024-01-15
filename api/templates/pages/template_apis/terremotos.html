@@ -1,43 +1,102 @@
-{% load static %}   
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Mapa de Google</title>
-    <!-- Incluye la API de Google Maps con tu clave -->
-    <script src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&libraries=places" async defer></script>
-    <style>
-        /* Ajusta el tamaño del mapa según sea necesario */
-        #map {
-            height: 400px;
-            width: 1300px;
-            margin-top: 60px; /* Ajusta el valor según sea necesario */
-        }
-
-        /* Centra el contenido */
-        .wrapper {
-            margin: auto;
-        }
-        
-        /* Ajusta el z-index de la barra de navegación */
-        .navbar {
-            position: fixed;
-            z-index: 1000;
-            width: 100%;
-        }
-    </style>
+  <title>NSOSMEX | Terremotos</title>
   {% include "pages/includes/headindexs.html" %}
+  <style>
+    /* Agrega esto al área de estilos de tu archivo CSS */
+    .ventana-emergente {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .contenido {
+        background-color: #fefefe;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        animation: fadeIn 0.3s ease-in-out forwards; /* Agrega animación de entrada */
+    }
+
+    .cerrar {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .cerrar:hover,
+    .cerrar:focus {
+        color: black;
+    }
+
+    .codigo {
+        color: red;
+        font-weight: bold;
+    }
+
+    /* Agrega animación de salida */
+    .ventana-emergente.fade-out .contenido {
+        animation: fadeOut 0.3s ease-in-out forwards;
+    }
+
+    .ventana-emergente.fade-out {
+        animation: fadeOutBackground 0.3s ease-in-out forwards;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    @keyframes fadeOut {
+        from {
+            opacity: 1;
+        }
+        to {
+            opacity: 0;
+        }
+    }
+
+    @keyframes fadeOutBackground {
+        from {
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        to {
+            background-color: rgba(0, 0, 0, 0);
+        }
+    }
+</style>
+
+
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
 <div class="wrapper">
   {% include "pages/includes/preloader.html" %}
 
-  <nav class="main-header navbar navbar-expand navbar-white navbar-light">
   {% include "pages/includes/navbar.html" %}
-  {% include "pages/includes/messages_menu.html" %}
-  {% include "pages/includes/notifications_dropdown_menu.html" %}
+
   <!-- /.navbar -->
+</ul>
+</nav>
+
 
   <!-- Main Sidebar Container -->
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
@@ -47,38 +106,142 @@
       <span class="brand-text font-weight-light">NSOSMEX</span>
     </a>
     <!-- Sidebar -->
-
-    {% include "pages/includes/slidebar.html" %}
-
-    <!-- SidebarSearch Form -->
-    {% include "pages/includes/search.html" %}
-
-    <!-- Sidebar Menu -->
-    {% include "pages/includes/slidebar_menu.html" %}
-
-    <h1>Últimos Terremotos</h1>
-
-    <ul>
-        {% if terremotos %}
-            {% for terremoto in terremotos %}
-                <li>
-                    <strong>Magnitud:</strong> {{ terremoto.properties.mag }}<br>
-                    <strong>Ubicación:</strong> {{ terremoto.properties.place }}<br>
-                    <strong>Fecha y Hora:</strong> {{ terremoto.properties.time | date:"D d M Y H:i:s" }}<br>
-                    <strong>Detalles:</strong> <a href="{{ terremoto.properties.url }}" target="_blank">Enlace</a><br>
-                </li>
-            {% endfor %}
+    <div class="sidebar">
+    <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+      <div class="image">
+        <img src="{% static "img/backgrounds/dist/img/user2-160x160.jpg" %}" class="img-circle elevation-2" alt="User Image">
+      </div>
+      <div class="info">
+        {% if user.is_authenticated %}
+          <a href="#" onclick="mostrarVentanaEliminar()" class="d-block">{{ user.nombreUsuario }}</a>
         {% else %}
-            <li>{{ mensaje_error }}</li>
-        {% endif %}
-    </ul>
-  </aside>
+          <!-- Puedes mostrar algo diferente si el usuario no está autenticado -->
+          <a href="#" class="d-block" onclick="mostrarVentanaEliminar()">Usuario no autenticado</a>
+          <!-- Agrega esto donde quieras que aparezca el enlace para eliminar la cuenta -->
+          {% endif %}
+       
+
+<!-- Agrega esta ventana emergente oculta -->
+<div id="ventanaEliminar" class="ventana-emergente">
+  <div class="contenido">
+      <span class="cerrar" onclick="cerrarVentanaEliminar()">&times;</span>
+      <p>¿Seguro que quieres eliminar la cuenta?</p>
+      <p>Ingresa lo siguiente: <span class="codigo">eliminar cuenta <span id="codigoAleatorio"></span></span></p>
+      <input type="text" class="form-control mb-2" id="contrasenaEliminar" placeholder="Ingresa la contraseña" onclick="limpiarCampo()">
+      <button id="botonEliminar" class="btn btn-danger mr-2" onclick="eliminarCuenta()">Eliminar</button>
+      <button class="btn btn-secondary" onclick="cerrarVentanaEliminar()">Cancelar</button>
+  </div>
+</div>
+
+   
+      </div>
+    </div>
+
+
+<!-- SidebarSearch Form -->
+{% include "pages/includes/search.html" %}
+
+      <!-- Sidebar Menu -->
+      {% include "pages/includes/slidebar_menu.html" %}
+
+
+
+
+  
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">Terremotos</h1>
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a>Terremotos</a></li>
+              <li class="breadcrumb-item active">Aplicaciones</li>
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <!-- Small boxes (Stat box) -->
+        
+        <!-- /.row -->
+        <!-- Main row -->
+        <div class="row">
+          <!-- Left col -->
+          <section class="col-lg-7 connectedSortable">
+            <!-- Custom tabs (Charts with tabs)-->
+
+
+
+            <!-- TO DO List -->
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">
+                  <i class="ion ion-clipboard mr-1"></i>
+                  Últimos Terremotos
+                </h3>
+
+         
+              </div>
+              <!-- /.card-header -->
+              <ul>
+                {% if terremotos %}
+                    {% for terremoto in terremotos %}
+                        <li>
+                            <strong>Magnitud:</strong> {{ terremoto.properties.mag }}<br>
+                            <strong>Ubicación:</strong> {{ terremoto.properties.place }}<br>
+                            <strong>Fecha y Hora:</strong> {{ terremoto.properties.time | date:"D d M Y H:i:s" }}<br>
+                            <strong>Detalles:</strong> <a href="{{ terremoto.properties.url }}" target="_blank">Enlace</a><br>
+                        </li>
+                    {% endfor %}
+                {% else %}
+                    <li>{{ mensaje_error }}</li>
+                {% endif %}
+            </ul>
+            <canvas id="chart"></canvas>
+              <!-- /.card-body -->
+              
+            </div>
+            <!-- /.card -->
+          </section>
+          <!-- /.Left col -->
+          <!-- right col (We are only adding the ID to make the widgets sortable)-->
+          <section class="col-lg-5 connectedSortable">
+
+
+            <!-- /.card -->
+
+            <!-- solid sales graph -->
+
+            <!-- /.card -->
+
+            <!-- Calendar -->
+   
+            <!-- /.card -->
+          </section>
+          <!-- right col -->
+        </div>
+        <!-- /.row (main row) -->
+      </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+  </div>
   <!-- /.content-wrapper -->
   <footer class="main-footer">
-    <strong>Copyright &copy; 2014-2021 <a href="https://adminlte.io">AdminLTE.io</a>.</strong>
-    All rights reserved.
+   
+   
     <div class="float-right d-none d-sm-inline-block">
-      <b>Version</b> 3.2.0
+ 
     </div>
   </footer>
 
@@ -118,11 +281,106 @@
 <script src="{% static "js/plugins/summernote/summernote-bs4.min.js" %}"></script>
 <!-- overlayScrollbars -->
 <script src="{% static "js/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js" %}"></script>
+<!-- FullCalendar CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css">
+<!-- FullCalendar JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
+<!-- FullCalendar Localization (Spanish) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/locale/es.js"></script>
 <!-- AdminLTE App -->
 <script src="{% static "js/dist/js/adminlte.js" %}"></script>
 <!-- AdminLTE for demo purposes -->
-<script src="{% static "js/dist/js/demo.js" %}"></script>
 <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
 <script src="{% static "js/dist/js/pages/dashboard.js" %}"></script>
+<!-- Incluir Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+
+<script>
+  function mostrarVentanaEliminar() {
+      // Limpia el contenido del campo de texto
+      limpiarCampo();
+
+      // Genera y muestra el código aleatorio
+      var codigoAleatorio = generarCodigoAleatorio();
+      document.getElementById('codigoAleatorio').textContent = codigoAleatorio;
+      document.getElementById('ventanaEliminar').style.display = 'block';
+  }
+
+  function cerrarVentanaEliminar() {
+      // Oculta la ventana emergente
+      document.getElementById('ventanaEliminar').style.display = 'none';
+  }
+
+  function limpiarCampo() {
+      // Limpia el contenido del campo de texto
+      document.getElementById('contrasenaEliminar').value = '';
+  }
+
+  function generarCodigoAleatorio() {
+      // Genera y retorna un número aleatorio de 6 dígitos
+      return Math.floor(100000 + Math.random() * 900000);
+  }
+
+  function eliminarCuenta() {
+      // Obtiene la contraseña ingresada por el usuario
+      var contrasena = document.getElementById('contrasenaEliminar').value;
+
+      // Obtiene el código aleatorio generado
+      var codigoAleatorio = document.getElementById('codigoAleatorio').textContent;
+
+      // Verifica si la contraseña ingresada coincide con el código aleatorio
+      if (contrasena === 'eliminar cuenta ' + codigoAleatorio) {
+          // Redirecciona al login después de eliminar la cuenta
+          window.location.href = '/eliminar_todos_los_usuarios/';
+      } else {
+          // Muestra un mensaje de error (puedes personalizar según tus necesidades)
+          alert('Contraseña incorrecta. Intenta de nuevo.');
+      }
+  }
+</script>
+
+
+
+<script>
+  // Obtener datos de magnitud y lugar
+  var magnitudes = [
+      {% for terremoto in terremotos %}
+          {{ terremoto.properties.mag }},
+      {% endfor %}
+  ];
+
+  var lugares = [
+      {% for terremoto in terremotos %}
+          "{{ terremoto.properties.place }}",
+      {% endfor %}
+  ];
+
+  // Crear un gráfico de barras
+  var ctx = document.getElementById('chart').getContext('2d');
+  var myChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+          labels: lugares,
+          datasets: [{
+              label: 'Magnitud de los terremotos',
+              data: magnitudes,
+              backgroundColor: 'rgba(75, 192, 192, 0.2)',
+              borderColor: 'rgba(75, 192, 192, 1)',
+              borderWidth: 1
+          }]
+      },
+      options: {
+          scales: {
+              y: {
+                  beginAtZero: true
+              }
+          }
+      }
+  });
+</script>
+
+
 </body>
 </html>
