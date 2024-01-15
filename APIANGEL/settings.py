@@ -20,7 +20,6 @@ if RENDER_EXTERNAL_HOSTNAME:
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
 
-
 INSTALLED_APPS = [
     'api',
     'rest_framework',
@@ -145,10 +144,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # settings.py
 
 # Configuración de correo electrónico
-EMAIL_USE_TLS = True  # Usar TLS para conexión segura
-EMAIL_HOST = 'smtp.gmail.com'  # Servidor SMTP de Gmail     
-EMAIL_PORT = 587  # Puerto de Gmail para TLS/STARTTLS 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # Servidor SMTP de Gmail
+EMAIL_PORT = 587  # Puerto de Gmail para TLS/STARTTLS
+EMAIL_USE_TLS = True  # Usar TLS para conexión segura
 
 # Credenciales de correo electrónico de Gmail
 EMAIL_HOST_USER = 'angel585244102@gmail.com'  # Tu dirección de correo de Gmail
